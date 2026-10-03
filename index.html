@@ -1,0 +1,1902 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Presidente: O Jogo do Poder</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="manifest" href="./manifest.webmanifest">
+    <meta name="theme-color" content="#f59e0b">
+    <link rel="apple-touch-icon" href="./icons/icon-192.png">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            500: '#22c55e',
+                            800: '#166534',
+                            900: '#14532d',
+                        },
+                        palacio: {
+                            800: '#0f172a',
+                            900: '#020617',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Cinzel', 'serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #030712;
+            color: #f3f4f6;
+        }
+
+        .font-serif-title {
+            font-family: 'Cinzel', serif;
+        }
+
+        .stat-bar {
+            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.5s ease;
+        }
+
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.88);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .btn-option {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .btn-option:hover {
+            transform: translateY(-2px);
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #090d16;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #334155;
+        }
+
+        /* Modo de debate ao vivo */
+        .debate-live-stage {
+            position: relative;
+            overflow: hidden;
+        }
+        .debate-live-stage::before {
+            content: '';
+            position: absolute;
+            inset: -20%;
+            background: radial-gradient(circle at 50% 20%, rgba(245,158,11,.18), transparent 28%), radial-gradient(circle at 15% 75%, rgba(14,165,233,.12), transparent 24%), radial-gradient(circle at 85% 70%, rgba(239,68,68,.10), transparent 22%);
+            animation: debateGlow 7s ease-in-out infinite alternate;
+            pointer-events: none;
+        }
+        .debate-scanlines {
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(0deg, rgba(255,255,255,.018) 0, rgba(255,255,255,.018) 1px, transparent 1px, transparent 4px);
+            pointer-events: none;
+            opacity: .55;
+        }
+        .debate-live-dot {
+            box-shadow: 0 0 0 0 rgba(239,68,68,.75);
+            animation: livePulse 1.4s infinite;
+        }
+        .debate-lower-third {
+            animation: lowerThirdIn .45s cubic-bezier(.2,.8,.2,1) both;
+        }
+        .debate-question-in {
+            animation: questionIn .42s cubic-bezier(.2,.8,.2,1) both;
+        }
+        .debate-answer-in {
+            animation: answerIn .35s ease both;
+        }
+        .debate-timer {
+            font-variant-numeric: tabular-nums;
+            letter-spacing: .08em;
+        }
+        @keyframes debateGlow { from { transform: scale(1) translate3d(0,0,0); opacity:.65; } to { transform: scale(1.08) translate3d(1%,-1%,0); opacity:1; } }
+        @keyframes livePulse { 0% { box-shadow: 0 0 0 0 rgba(239,68,68,.7); } 70% { box-shadow: 0 0 0 9px rgba(239,68,68,0); } 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); } }
+        @keyframes lowerThirdIn { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+        @keyframes questionIn { from { opacity:0; transform:translateY(12px) scale(.985); } to { opacity:1; transform:translateY(0) scale(1); } }
+        @keyframes answerIn { from { opacity:0; transform:translateX(-10px); } to { opacity:1; transform:translateX(0); } }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-amber-500 selection:text-slate-950 overflow-x-hidden">
+
+    <!-- Top Nav Header -->
+    <header class="border-b border-slate-800 bg-slate-950/90 sticky top-0 z-40 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-4 py-2.5 flex flex-wrap items-center justify-between gap-4">
+            
+            <!-- Logo & Title -->
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 via-amber-600 to-yellow-600 flex items-center justify-center text-slate-950 font-bold text-xl shadow-lg shadow-amber-500/20">
+                    <i class="fa-solid fa-landmark"></i>
+                </div>
+                <div>
+                    <h1 class="font-serif-title font-bold text-base md:text-lg tracking-wider text-amber-400">PRESIDENTE</h1>
+                    <p class="text-[10px] text-slate-400 uppercase tracking-widest font-semibold">Simulador do Planalto</p>
+                </div>
+            </div>
+
+            <!-- Profile Badge Header -->
+            <div id="header-profile" class="hidden flex items-center gap-3 bg-slate-900/90 border border-slate-800 px-3 py-1.5 rounded-xl">
+                <img id="header-photo" src="" alt="Presidente" class="w-9 h-9 rounded-full object-cover border-2 border-amber-500/60 shadow-md">
+                <div>
+                    <div id="header-name" class="text-xs font-bold text-slate-100">Pres. Jogador</div>
+                    <div id="header-diff" class="text-[10px] text-amber-400 uppercase font-semibold">Dificuldade: Normal</div>
+                </div>
+            </div>
+
+            <!-- Year & Quarter Indicator -->
+            <div id="time-badge" class="hidden flex items-center space-x-3 bg-slate-900/90 px-4 py-1.5 rounded-xl border border-slate-800">
+                <div class="text-center border-r border-slate-800 pr-3">
+                    <span class="text-[10px] uppercase tracking-wider text-slate-400 block font-semibold">Ano</span>
+                    <span id="current-year" class="text-base font-bold text-amber-400">1</span><span id="max-years" class="text-xs text-slate-500">/4</span>
+                </div>
+                <div class="text-center pl-1">
+                    <span class="text-[10px] uppercase tracking-wider text-slate-400 block font-semibold">Trimestre</span>
+                    <span id="current-quarter" class="text-base font-bold text-emerald-400">T1</span>
+                </div>
+            </div>
+
+            <button id="btn-restart-top" onclick="resetWholeGame()" class="hidden text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg border border-slate-700 transition flex items-center gap-2">
+                <i class="fa-solid fa-rotate-right"></i> Reiniciar
+            </button>
+        </div>
+    </header>
+
+    <!-- Plantão News Ticker -->
+    <div id="news-bar" class="hidden bg-amber-950/30 border-y border-amber-500/20 py-1.5 px-4 overflow-hidden flex items-center text-xs">
+        <span class="bg-amber-500 text-slate-950 font-extrabold px-2 py-0.5 rounded text-[10px] tracking-wider uppercase mr-3 shrink-0 shadow-sm">PLANTÃO</span>
+        <div class="overflow-hidden relative w-full">
+            <p id="news-ticker" class="text-amber-200/90 font-medium whitespace-nowrap animate-pulse">
+                Presidente toma posse em Brasília prometendo estabilidade e governabilidade.
+            </p>
+        </div>
+    </div>
+
+    <!-- National Economic Dashboard Bar (Raios-X do Brasil) -->
+    <div id="economic-bar" class="hidden bg-slate-950 border-b border-slate-800/80 py-2 px-4">
+        <div class="max-w-7xl mx-auto grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+            <div class="bg-slate-900/60 p-2 rounded-lg border border-slate-800/80 flex items-center justify-between">
+                <span class="text-slate-400 font-medium"><i class="fa-solid fa-chart-line text-emerald-400 mr-1.5"></i> PIB:</span>
+                <span id="eco-pib" class="font-bold text-emerald-400">+2.1% (R$ 10.9T)</span>
+            </div>
+            <div class="bg-slate-900/60 p-2 rounded-lg border border-slate-800/80 flex items-center justify-between">
+                <span class="text-slate-400 font-medium"><i class="fa-solid fa-tags text-amber-400 mr-1.5"></i> Inflação (IPCA):</span>
+                <span id="eco-inflation" class="font-bold text-amber-400">4.5%</span>
+            </div>
+            <div class="bg-slate-900/60 p-2 rounded-lg border border-slate-800/80 flex items-center justify-between">
+                <span class="text-slate-400 font-medium"><i class="fa-solid fa-user-slash text-rose-400 mr-1.5"></i> Desemprego:</span>
+                <span id="eco-unemployment" class="font-bold text-slate-200">8.2%</span>
+            </div>
+            <div class="bg-slate-900/60 p-2 rounded-lg border border-slate-800/80 flex items-center justify-between">
+                <span class="text-slate-400 font-medium"><i class="fa-solid fa-vault text-cyan-400 mr-1.5"></i> Caixa do Tesouro:</span>
+                <span id="eco-treasury" class="font-bold text-cyan-400">R$ 120 Bi</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCREEN 0: Setup Screen -->
+    <section id="setup-screen" class="max-w-2xl mx-auto my-8 px-4 w-full">
+        <div class="glass-panel p-6 md:p-8 rounded-3xl shadow-2xl border border-slate-800">
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 bg-gradient-to-br from-amber-500 to-amber-700 rounded-2xl flex items-center justify-center text-slate-950 font-bold text-3xl mx-auto mb-3 shadow-xl shadow-amber-500/20">
+                    <i class="fa-solid fa-user-tie"></i>
+                </div>
+                <h2 class="text-2xl md:text-3xl font-serif-title font-bold text-slate-100">Posse Presidencial</h2>
+                <p class="text-slate-400 text-sm mt-1">Configure o seu perfil e a dificuldade do seu governo.</p>
+            </div>
+
+            <form id="setup-form" onsubmit="event.preventDefault(); startGame();" class="space-y-6">
+                <!-- Name -->
+                <div>
+                    <label class="block text-xs uppercase tracking-wider font-semibold text-slate-300 mb-2">Nome do Presidente / Presidenta</label>
+                    <input type="text" id="input-name" required value="Juscelino Kubitschek" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-slate-100 focus:outline-none focus:border-amber-500 transition text-sm">
+                </div>
+
+                <!-- Photo Avatar Selection -->
+                <div>
+                    <label class="block text-xs uppercase tracking-wider font-semibold text-slate-300 mb-2">Foto Oficial do Presidente</label>
+                    <div class="grid grid-cols-4 gap-3 mb-3">
+                        <button type="button" onclick="selectPresetPhoto('https://images.unsplash.com/photo-1560250097-0b93528c311a?w=150')" class="preset-photo-btn p-1 rounded-xl border-2 border-amber-500 bg-slate-900 focus:outline-none">
+                            <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=150" class="w-full h-14 object-cover rounded-lg">
+                        </button>
+                        <button type="button" onclick="selectPresetPhoto('https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150')" class="preset-photo-btn p-1 rounded-xl border-2 border-transparent hover:border-slate-600 bg-slate-900 focus:outline-none">
+                            <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150" class="w-full h-14 object-cover rounded-lg">
+                        </button>
+                        <button type="button" onclick="selectPresetPhoto('https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150')" class="preset-photo-btn p-1 rounded-xl border-2 border-transparent hover:border-slate-600 bg-slate-900 focus:outline-none">
+                            <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150" class="w-full h-14 object-cover rounded-lg">
+                        </button>
+                        <button type="button" onclick="selectPresetPhoto('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150')" class="preset-photo-btn p-1 rounded-xl border-2 border-transparent hover:border-slate-600 bg-slate-900 focus:outline-none">
+                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150" class="w-full h-14 object-cover rounded-lg">
+                        </button>
+                    </div>
+                    <div class="flex gap-2">
+                        <input type="text" id="input-photo-url" placeholder="Ou cole a URL de uma imagem..." class="flex-grow bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-amber-500">
+                        <label class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs px-3 py-2 rounded-xl border border-slate-700 cursor-pointer flex items-center gap-1.5 shrink-0">
+                            <i class="fa-solid fa-upload"></i> Upload
+                            <input type="file" id="input-photo-file" accept="image/*" class="hidden" onchange="handleFileUpload(event)">
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Difficulty Selection -->
+                <div>
+                    <label class="block text-xs uppercase tracking-wider font-semibold text-slate-300 mb-2">Nível de Dificuldade</label>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <label class="diff-card p-3 rounded-xl bg-slate-900 border-2 border-amber-500 cursor-pointer flex flex-col justify-between">
+                            <input type="radio" name="difficulty" value="facil" checked class="hidden" onchange="selectDifficulty(this)">
+                            <div>
+                                <span class="font-bold text-emerald-400 text-sm block">FÁCIL</span>
+                                <p class="text-[11px] text-slate-400 mt-1">Efeitos visíveis nas escolhas e menor volatilidade em crises.</p>
+                            </div>
+                        </label>
+
+                        <label class="diff-card p-3 rounded-xl bg-slate-900 border-2 border-slate-800 cursor-pointer flex flex-col justify-between">
+                            <input type="radio" name="difficulty" value="medio" class="hidden" onchange="selectDifficulty(this)">
+                            <div>
+                                <span class="font-bold text-amber-400 text-sm block">MÉDIO</span>
+                                <p class="text-[11px] text-slate-400 mt-1">Indicadores qualitativos (setas). Impactos realistas.</p>
+                            </div>
+                        </label>
+
+                        <label class="diff-card p-3 rounded-xl bg-slate-900 border-2 border-slate-800 cursor-pointer flex flex-col justify-between">
+                            <input type="radio" name="difficulty" value="dificil" class="hidden" onchange="selectDifficulty(this)">
+                            <div>
+                                <span class="font-bold text-rose-500 text-sm block">DIFÍCIL / REALISTA</span>
+                                <p class="text-[11px] text-slate-400 mt-1">SEM spoilers de pontos. Volatilidade alta, STF rigoroso e mercado reativo!</p>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full py-4 bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-extrabold rounded-2xl shadow-xl shadow-amber-500/20 text-base tracking-wide uppercase transition">
+                    <i class="fa-solid fa-flag text-slate-950 mr-2"></i> Assumir a Presidência
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <!-- SCREEN 1: Main Game Workspace -->
+    <main id="game-screen" class="hidden max-w-7xl mx-auto px-4 py-5 w-full flex-grow grid grid-cols-1 lg:grid-cols-12 gap-5">
+
+        <!-- Left Column: Indicators & Decrees (5 cols) -->
+        <section class="lg:col-span-5 flex flex-col gap-4">
+
+            <!-- President Profile Mini Card -->
+            <div class="glass-panel p-4 rounded-2xl flex items-center justify-between border border-slate-800">
+                <div class="flex items-center gap-3">
+                    <img id="dashboard-photo" src="" alt="Presidente" class="w-14 h-14 rounded-2xl object-cover border-2 border-amber-500/80 shadow-lg">
+                    <div>
+                        <h3 id="dashboard-name" class="font-bold text-slate-100 text-base">Pres. Juscelino</h3>
+                        <p id="dashboard-difficulty-tag" class="text-[11px] text-amber-400 font-semibold uppercase tracking-wider">Modo: Fácil</p>
+                    </div>
+                </div>
+                <div class="text-right border-l border-slate-800 pl-4">
+                    <span class="text-[10px] text-slate-400 uppercase font-bold block">Status do Governo</span>
+                    <span id="gov-status-badge" class="bg-emerald-500/10 text-emerald-400 text-xs px-2.5 py-0.5 rounded-full font-bold border border-emerald-500/30">Estável</span>
+                </div>
+            </div>
+
+            <!-- 5 Key Power Bars -->
+            <div class="glass-panel p-5 rounded-2xl shadow-xl space-y-3.5">
+                <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+                    <h2 class="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+                        <i class="fa-solid fa-chart-pie text-amber-400"></i> Apoio Institucional
+                    </h2>
+                    <span id="risk-warning" class="text-[10px] text-slate-500">Gatilho Impeachment: &lt; 20%</span>
+                </div>
+
+                <!-- POVO -->
+                <div class="space-y-1">
+                    <div class="flex justify-between text-xs font-semibold">
+                        <span class="text-slate-200 flex items-center gap-2">
+                            <i class="fa-solid fa-users text-blue-400 w-4"></i> Povo (POV)
+                        </span>
+                        <span id="val-pov" class="text-blue-400 font-bold">50%</span>
+                    </div>
+                    <div class="w-full bg-slate-900 h-2.5 rounded-full overflow-hidden p-0.5 border border-slate-800">
+                        <div id="bar-pov" class="stat-bar h-full rounded-full bg-blue-500" style="width: 50%;"></div>
+                    </div>
+                </div>
+
+                <!-- DEPUTADOS -->
+                <div class="space-y-1">
+                    <div class="flex justify-between text-xs font-semibold">
+                        <span class="text-slate-200 flex items-center gap-2">
+                            <i class="fa-solid fa-building-columns text-emerald-400 w-4"></i> Câmara (DEP)
+                        </span>
+                        <span id="val-dep" class="text-emerald-400 font-bold">50%</span>
+                    </div>
+                    <div class="w-full bg-slate-900 h-2.5 rounded-full overflow-hidden p-0.5 border border-slate-800">
+                        <div id="bar-dep" class="stat-bar h-full rounded-full bg-emerald-500" style="width: 50%;"></div>
+                    </div>
+                </div>
+
+                <!-- SENADO -->
+                <div class="space-y-1">
+                    <div class="flex justify-between text-xs font-semibold">
+                        <span class="text-slate-200 flex items-center gap-2">
+                            <i class="fa-solid fa-scale-balanced text-purple-400 w-4"></i> Senado (SEN)
+                        </span>
+                        <span id="val-sen" class="text-purple-400 font-bold">50%</span>
+                    </div>
+                    <div class="w-full bg-slate-900 h-2.5 rounded-full overflow-hidden p-0.5 border border-slate-800">
+                        <div id="bar-sen" class="stat-bar h-full rounded-full bg-purple-500" style="width: 50%;"></div>
+                    </div>
+                </div>
+
+                <!-- STF -->
+                <div class="space-y-1">
+                    <div class="flex justify-between text-xs font-semibold">
+                        <span class="text-slate-200 flex items-center gap-2">
+                            <i class="fa-solid fa-gavel text-amber-400 w-4"></i> STF
+                        </span>
+                        <span id="val-stf" class="text-amber-400 font-bold">50%</span>
+                    </div>
+                    <div class="w-full bg-slate-900 h-2.5 rounded-full overflow-hidden p-0.5 border border-slate-800">
+                        <div id="bar-stf" class="stat-bar h-full rounded-full bg-amber-500" style="width: 50%;"></div>
+                    </div>
+                </div>
+
+                <!-- INTERNACIONAL -->
+                <div class="space-y-1">
+                    <div class="flex justify-between text-xs font-semibold">
+                        <span class="text-slate-200 flex items-center gap-2">
+                            <i class="fa-solid fa-globe text-cyan-400 w-4"></i> Comunidade Int. (INT)
+                        </span>
+                        <span id="val-int" class="text-cyan-400 font-bold">50%</span>
+                    </div>
+                    <div class="w-full bg-slate-900 h-2.5 rounded-full overflow-hidden p-0.5 border border-slate-800">
+                        <div id="bar-int" class="stat-bar h-full rounded-full bg-cyan-500" style="width: 50%;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Corrupção & Integridade -->
+            <div class="glass-panel p-4 rounded-2xl shadow-xl border border-rose-500/20">
+                <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider mb-3 flex items-center justify-between border-b border-slate-800 pb-2">
+                    <span><i class="fa-solid fa-magnifying-glass-chart text-rose-400 mr-1.5"></i> Escada de Corrupção</span>
+                    <span id="corruption-level-label" class="text-[10px] text-emerald-400">NÍVEL 0 — ÍNTEGRO</span>
+                </h3>
+                <div class="w-full bg-slate-900 h-2.5 rounded-full overflow-hidden border border-slate-800 mb-2">
+                    <div id="corruption-bar" class="h-full rounded-full bg-emerald-500 transition-all duration-500" style="width:0%"></div>
+                </div>
+                <div class="flex justify-between text-[10px] text-slate-500 mb-3"><span>Integridade</span><span id="corruption-score">0 / 100</span></div>
+                <p id="corruption-status" class="text-[11px] text-slate-400 leading-relaxed">Sem denúncias relevantes. Investigações e transparência reduzem o risco.</p>
+                <div id="corruption-alert" class="hidden mt-3 p-3 rounded-xl bg-rose-950/50 border border-rose-500/30 text-[11px] text-rose-200"></div>
+            </div>
+
+            <!-- Decrees & Emergency Lateral Panel -->
+            <div class="glass-panel p-4 rounded-2xl shadow-xl">
+                <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider mb-3 flex items-center justify-between border-b border-slate-800 pb-2">
+                    <span><i class="fa-solid fa-pen-nib text-amber-400 mr-1.5"></i> Decretos Presidenciais Rápidos</span>
+                    <span class="text-[10px] text-slate-500">Canetada</span>
+                </h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                    <button onclick="executeDecree('auxilio')" class="btn-option bg-slate-900 hover:bg-slate-800 p-2.5 rounded-xl border border-slate-800 text-left flex items-center gap-2">
+                        <i class="fa-solid fa-hand-holding-dollar text-emerald-400 text-base"></i>
+                        <div>
+                            <div class="font-bold text-slate-200">Auxílio Emergencial</div>
+                            <div class="text-[10px] text-slate-400">+POV, -R$ 20Bi Caixa</div>
+                        </div>
+                    </button>
+
+                    <button onclick="executeDecree('emendas')" class="btn-option bg-slate-900 hover:bg-slate-800 p-2.5 rounded-xl border border-slate-800 text-left flex items-center gap-2">
+                        <i class="fa-solid fa-money-bill-transfer text-amber-400 text-base"></i>
+                        <div>
+                            <div class="font-bold text-slate-200">Emendas Pix / Relator</div>
+                            <div class="text-[10px] text-slate-400">+DEP/SEN, -R$ 12Bi</div>
+                        </div>
+                    </button>
+
+                    <button onclick="executeDecree('diplomacia')" class="btn-option bg-slate-900 hover:bg-slate-800 p-2.5 rounded-xl border border-slate-800 text-left flex items-center gap-2">
+                        <i class="fa-solid fa-plane text-cyan-400 text-base"></i>
+                        <div>
+                            <div class="font-bold text-slate-200">Viagem Diplomática</div>
+                            <div class="text-[10px] text-slate-400">+INT, +PIB, -R$ 2Bi</div>
+                        </div>
+                    </button>
+
+                    <button onclick="executeDecree('reforma_ministerial')" class="btn-option bg-slate-900 hover:bg-slate-800 p-2.5 rounded-xl border border-slate-800 text-left flex items-center gap-2">
+                        <i class="fa-solid fa-users-gear text-purple-400 text-base"></i>
+                        <div>
+                            <div class="font-bold text-slate-200">Reforma Ministerial</div>
+                            <div class="text-[10px] text-slate-400">+DEP/SEN, -POV</div>
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Diário Oficial / History Log -->
+            <div class="glass-panel p-4 rounded-2xl shadow-xl flex-grow flex flex-col">
+                <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider mb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-clock-rotate-left text-slate-400"></i> Diário Oficial das Decisões
+                </h3>
+                <div id="history-log" class="space-y-2.5 overflow-y-auto max-h-[160px] pr-2 text-xs text-slate-400">
+                    <p class="italic text-slate-500 border-l-2 border-slate-800 pl-2">Governo iniciado. Aguardando despachos...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Right Column: Decision & Event Workspace (7 cols) -->
+        <section class="lg:col-span-7 flex flex-col justify-between">
+            <div id="event-card" class="glass-panel p-5 md:p-6 rounded-3xl shadow-2xl relative border-amber-500/20 border flex flex-col justify-between h-full">
+                
+                <div>
+                    <!-- Event Tag -->
+                    <div class="flex items-center justify-between mb-4">
+                        <span id="event-category" class="bg-amber-500/10 text-amber-400 border border-amber-500/30 text-xs px-3 py-1 rounded-full uppercase tracking-wider font-bold">
+                            Despacho Presidencial
+                        </span>
+                        <span id="event-turn-indicator" class="text-xs text-slate-400 font-mono font-bold">1 / 16</span>
+                    </div>
+
+                    <!-- Event Title & Narrative -->
+                    <h2 id="event-title" class="text-xl md:text-2xl font-bold text-slate-100 mb-3 font-serif-title leading-snug">
+                        Carregando Evento...
+                    </h2>
+                    <p id="event-description" class="text-slate-300 text-sm md:text-base mb-6 leading-relaxed bg-slate-950/70 p-4 rounded-2xl border border-slate-800/80">
+                        Aguardando atualização do Gabinete Presidencial...
+                    </p>
+
+                    <!-- Feedback message (temporary after picking) -->
+                    <div id="feedback-box" class="hidden mb-6 p-4 rounded-2xl border text-sm transition">
+                        <p id="feedback-text" class="font-semibold"></p>
+                    </div>
+
+                    <!-- Decision Options Container -->
+                    <div id="options-container" class="space-y-3">
+                        <!-- Dynamic Options Filled in JS -->
+                    </div>
+                </div>
+
+                <!-- Footer tip -->
+                <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-500">
+                    <span><i class="fa-solid fa-shield-halved text-amber-500/80 mr-1"></i> Tome decisões com prudência fiscal e política.</span>
+                    <span id="mandate-tag" class="font-bold text-slate-400">1º Mandato (4 Anos)</span>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- SCREEN 2: Impeachment Voting Screen Modal -->
+    <div id="impeachment-modal" class="fixed inset-0 bg-slate-950/95 backdrop-blur-lg z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-rose-500/40 rounded-3xl max-w-xl w-full p-6 text-center shadow-2xl relative">
+            <div class="w-16 h-16 mx-auto rounded-2xl bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-3xl text-rose-500 mb-3">
+                <i class="fa-solid fa-gavel animate-bounce"></i>
+            </div>
+            
+            <h2 class="text-2xl md:text-3xl font-serif-title font-bold text-slate-100 mb-1">SESSÃO DE IMPEACHMENT</h2>
+            <p class="text-xs font-bold text-rose-400 mb-4 uppercase tracking-widest">Plenário da Câmara dos Deputados</p>
+
+            <p id="impeachment-reason" class="text-slate-300 text-xs md:text-sm mb-5 bg-slate-950 p-3.5 rounded-xl border border-slate-800 text-left">
+                Devido à queda crítica na sua governabilidade, a oposição abriu a votação do processo de cassação do seu mandato.
+            </p>
+
+            <div class="bg-slate-950/80 p-4 rounded-2xl border border-slate-800 mb-6 space-y-3">
+                <div class="flex justify-between items-center text-xs font-bold">
+                    <span class="text-emerald-400"><i class="fa-solid fa-thumbs-down mr-1"></i> Pelo Arquivamento (NÃO): <span id="votes-no">0</span></span>
+                    <span class="text-rose-500"><i class="fa-solid fa-thumbs-up mr-1"></i> Pela Cassação (SIM): <span id="votes-yes">0</span></span>
+                </div>
+                <div class="w-full bg-slate-800 h-4 rounded-full overflow-hidden flex border border-slate-700">
+                    <div id="bar-votes-no" class="bg-emerald-500 h-full transition-all duration-300" style="width: 50%;"></div>
+                    <div id="bar-votes-yes" class="bg-rose-500 h-full transition-all duration-300" style="width: 50%;"></div>
+                </div>
+                <p id="voting-status-text" class="text-[11px] text-slate-400 font-mono">Votação nominal em andamento no Plenário...</p>
+            </div>
+
+            <button id="btn-finish-impeachment" onclick="resolveImpeachmentResult()" class="hidden w-full py-3.5 bg-slate-800 hover:bg-slate-700 text-slate-100 font-bold rounded-xl transition text-sm">
+                Ver Veredito do Plenário
+            </button>
+        </div>
+    </div>
+
+    <!-- SCREEN 3: Re-election & Debate Screen Modal -->
+    <div id="election-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden"
+        style="background-image: linear-gradient(rgba(2, 6, 23, 0.58), rgba(2, 6, 23, 0.72)), url('data:image/jpeg;base64,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'); background-size: cover; background-position: center; background-repeat: no-repeat;">
+        <div class="debate-live-stage bg-slate-900/85 backdrop-blur-sm border border-amber-500/50 rounded-3xl max-w-4xl w-full p-6 md:p-8 text-center shadow-2xl relative max-h-[92vh] overflow-y-auto">
+            <div class="debate-scanlines"></div>
+            <div class="relative z-10">
+            <!-- Step 1: Debate Intro -->
+            <div id="debate-step-intro">
+                <div class="flex items-center justify-between gap-3 mb-5 border-b border-white/10 pb-3">
+                    <div class="flex items-center gap-2 text-[10px] font-black tracking-[.22em] text-slate-300 uppercase"><span class="debate-live-dot w-2.5 h-2.5 rounded-full bg-rose-500 inline-block"></span> AO VIVO</div>
+                    <div class="text-[10px] font-black tracking-[.2em] text-slate-400 uppercase">Especial Eleitoral</div>
+                </div>
+                <div class="w-20 h-20 mx-auto rounded-3xl bg-gradient-to-br from-amber-400/20 to-cyan-400/10 border border-amber-400/40 flex items-center justify-center text-4xl text-amber-300 mb-4 shadow-lg shadow-amber-500/10">
+                    <i class="fa-solid fa-microphone-lines"></i>
+                </div>
+                <h2 class="text-3xl md:text-4xl font-serif-title font-bold text-white mb-1 tracking-wide">DEBATE ELEITORAL</h2>
+                <p class="text-xs font-black text-amber-400 mb-5 uppercase tracking-[.28em]">Transmissão nacional • ao vivo</p>
+
+                <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 text-left mb-6 space-y-3">
+                    <p class="text-xs text-slate-300">Você concluiu os 4 anos de mandato! Agora enfrentará seu adversário de oposição no debate decisivo transmitido para todo o país.</p>
+                    
+                    <div id="opponent-card" class="bg-slate-900 p-3 rounded-xl border border-slate-800 flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-amber-400 font-bold">
+                            <i class="fa-solid fa-user-tie text-lg"></i>
+                        </div>
+                        <div>
+                            <div id="opponent-name" class="text-xs font-bold text-slate-100">Candidato de Oposição</div>
+                            <div id="opponent-party" class="text-[10px] text-slate-400">Partido da Renovação Nacional</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-3 mb-5 text-left">
+                    <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-3"><div class="text-[9px] uppercase tracking-widest text-slate-500 font-bold">Formato</div><div class="text-xs font-bold text-slate-200 mt-1">Perguntas diretas</div></div>
+                    <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-3"><div class="text-[9px] uppercase tracking-widest text-slate-500 font-bold">Clima</div><div class="text-xs font-bold text-slate-200 mt-1">Estúdio ao vivo</div></div>
+                    <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-3"><div class="text-[9px] uppercase tracking-widest text-slate-500 font-bold">Áudio</div><div class="text-xs font-bold text-amber-300 mt-1">Abertura de TV</div></div>
+                </div>
+                <button onclick="startDebateQuestions()" class="w-full py-4 bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 hover:brightness-110 text-slate-950 font-black rounded-xl shadow-lg shadow-amber-500/20 transition text-sm uppercase tracking-wider">
+                    <i class="fa-solid fa-tower-broadcast mr-2"></i> Entrar no Estúdio de TV
+                </button>
+                <div class="mt-3 flex items-center justify-center gap-2">
+                    <label for="debate-audio-file" class="cursor-pointer text-[10px] text-slate-400 hover:text-amber-300 transition underline underline-offset-2">Usar meu áudio do debate (MP3/OGG/WAV)</label>
+                    <input id="debate-audio-file" type="file" accept="audio/*" class="hidden" onchange="loadDebateAudioFile(this.files[0])">
+                </div>
+            </div>
+
+            <!-- Step 2: Debate Questions -->
+            <div id="debate-step-questions" class="hidden text-left space-y-4">
+                <div class="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-3 mb-3">
+                    <div class="flex items-center gap-2"><span class="debate-live-dot w-2.5 h-2.5 rounded-full bg-rose-500 inline-block"></span><span class="text-[10px] font-black tracking-[.18em] text-rose-400 uppercase">AO VIVO NA TV</span></div>
+                    <div class="flex items-center gap-3"><span id="debate-q-number" class="text-[10px] font-black text-amber-400 uppercase tracking-widest">Bloco 1 de 2</span><span id="debate-timer" class="debate-timer text-xs font-black text-white bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1">00:30</span></div>
+                </div>
+                <div class="debate-lower-third bg-slate-950/90 border border-slate-800 rounded-xl px-3 py-2 mb-3 text-left flex items-center justify-between gap-3">
+                    <div><div class="text-[9px] uppercase tracking-widest text-slate-500 font-bold">Candidato</div><div id="debate-player-name" class="text-xs font-extrabold text-white">Pres. Jogador</div></div>
+                    <div class="text-center text-slate-600">VS</div>
+                    <div class="text-right"><div class="text-[9px] uppercase tracking-widest text-slate-500 font-bold">Oposição</div><div id="debate-opponent-live" class="text-xs font-extrabold text-cyan-300">Candidato</div></div>
+                </div>
+                <p id="debate-question-text" class="debate-question-in text-base md:text-lg leading-relaxed font-semibold text-white bg-slate-950/95 p-5 rounded-2xl border border-amber-500/20 shadow-inner">
+                    Pergunta do candidato adversário...
+                </p>
+
+                <div id="debate-answers-container" class="space-y-2.5">
+                    <!-- Dynamic answers -->
+                </div>
+            </div>
+
+            <!-- Step 3: Election Counting Result -->
+            <div id="debate-step-counting" class="hidden space-y-4">
+                <div class="w-16 h-16 mx-auto rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-3xl text-emerald-400 mb-2">
+                    <i class="fa-solid fa-check-to-slot"></i>
+                </div>
+                <h2 class="text-2xl font-serif-title font-bold text-slate-100">APURAÇÃO DAS URNAS</h2>
+                <p class="text-xs text-slate-400 uppercase tracking-widest font-bold">TRIBUNAL SUPERIOR ELEITORAL</p>
+
+                <div class="bg-slate-950 p-5 rounded-2xl border border-slate-800 space-y-4">
+                    <div>
+                        <div class="flex justify-between text-xs font-bold mb-1">
+                            <span id="label-player-votes" class="text-amber-400">Pres. Jogador: 0%</span>
+                            <span id="label-opp-votes" class="text-cyan-400">Oposição: 0%</span>
+                        </div>
+                        <div class="w-full bg-slate-800 h-4 rounded-full overflow-hidden flex border border-slate-700">
+                            <div id="bar-player-votes" class="bg-amber-500 h-full transition-all duration-700" style="width: 0%;"></div>
+                            <div id="bar-opp-votes" class="bg-cyan-500 h-full transition-all duration-700" style="width: 0%;"></div>
+                        </div>
+                    </div>
+                    <p id="election-verdict-text" class="text-xs text-slate-300 italic">Aguardando 100% das urnas apuradas...</p>
+                </div>
+
+                <button id="btn-finish-election" onclick="finishElectionResult()" class="hidden w-full py-3.5 bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-extrabold rounded-xl shadow-lg transition text-sm">
+                    Ver Resultado Final
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCREEN 4: Final Modal (Victory / Defeat) -->
+    <div id="final-modal" class="fixed inset-0 bg-slate-950/95 backdrop-blur-lg z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-lg w-full p-6 text-center shadow-2xl relative">
+            <div id="final-icon-bg" class="w-20 h-20 mx-auto rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-4xl text-amber-400 mb-3">
+                <i id="final-icon" class="fa-solid fa-award"></i>
+            </div>
+            
+            <h2 id="final-title" class="text-2xl md:text-3xl font-serif-title font-bold text-slate-100 mb-1">Fim de Jogo</h2>
+            <p id="final-subtitle" class="text-xs font-bold text-amber-400 mb-4 uppercase tracking-widest">Resumo do Governo</p>
+            
+            <p id="final-message" class="text-slate-300 text-xs md:text-sm mb-5 bg-slate-950 p-4 rounded-2xl border border-slate-800 leading-relaxed text-left">
+                Descrição final...
+            </p>
+
+            <div id="final-stats-box" class="bg-slate-950/60 rounded-2xl p-4 mb-6 border border-slate-800 text-left space-y-2 text-xs">
+                <!-- Dynamically filled -->
+            </div>
+
+            <div class="flex gap-3">
+                <button id="btn-continue-2term" onclick="startSecondTerm()" class="hidden flex-1 py-3.5 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-extrabold rounded-2xl shadow-xl transition text-xs uppercase">
+                    Iniciar 2º Mandato (Anos 5 a 8)
+                </button>
+                <button onclick="resetWholeGame()" class="flex-1 py-3.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold rounded-2xl shadow-xl transition text-xs uppercase">
+                    Novo Jogo
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Trilha sonora: Hino Nacional Brasileiro (versão instrumental do Ministério da Educação) -->
+    <audio id="national-anthem" preload="auto" loop playsinline>
+        <source src="https://upload.wikimedia.org/wikipedia/commons/0/0d/Hino-Nacional-Brasil-instrumental-mec.ogg" type="audio/ogg">
+    </audio>
+
+    <script>
+        // Trilha sonora do jogo
+        const nationalAnthem = document.getElementById('national-anthem');
+        nationalAnthem.volume = 0.18;
+
+        function startNationalAnthem() {
+            nationalAnthem.volume = 0.18;
+            const playPromise = nationalAnthem.play();
+            if (playPromise && typeof playPromise.catch === 'function') {
+                playPromise.catch(() => {
+                    // O navegador pode bloquear autoplay; o primeiro clique do jogador tentará novamente.
+                });
+            }
+        }
+
+        document.addEventListener('click', () => {
+            if (document.getElementById('game-screen') && !document.getElementById('game-screen').classList.contains('hidden') && nationalAnthem.paused) {
+                startNationalAnthem();
+            }
+        }, { passive: true });
+
+        // Game State Variables
+        let player = {
+            name: "Juscelino Kubitschek",
+            photo: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=150",
+            difficulty: "facil" // 'facil', 'medio', 'dificil'
+        };
+
+        let currentTurn = 0; // 0 to 15 (First Term: 16 Quarters), 16 to 31 (Second Term)
+        let totalMaxTurns = 16; // Expands to 32 on 2nd term
+        let isSecondTerm = false;
+
+        let stats = {
+            pov: 50,
+            dep: 50,
+            sen: 50,
+            stf: 50,
+            int: 50
+        };
+
+        let economy = {
+            pib: 2.1,
+            pibTotal: 10.9,
+            inflation: 4.5,
+            unemployment: 8.2,
+            treasury: 120
+        };
+
+        let debateScore = 0;
+        // Controle do processo de impeachment para impedir disparos/votações duplicadas.
+        let impeachmentInProgress = false;
+        let impeachmentVoteInterval = null;
+        let decisionLocked = false;
+        let currentDebateIndex = 0;
+        let selectedOpponent = null;
+        let corruptionScore = 0;
+        let corruptionStage = 0;
+        let corruptionScandalCount = 0;
+        let questionBank1000 = [];
+        let electionState = { stage: 'idle', candidates: [], firstRound: [], finalists: [], endorsements: {}, secondRound: [] };
+        let firstRoundDebateScore = 0;
+        let secondRoundDebateScore = 0;
+        let electionTimer = null;
+
+        // Comportamento do governo: as decisões acumulam efeitos e passam a alterar
+        // as probabilidades de crises, escândalos, perda de apoio e impeachment.
+        let governmentBehavior = {
+            fiscal: 50,
+            institutional: 50,
+            transparency: 50,
+            coalition: 50,
+            publicTrust: 50,
+            confrontation: 0
+        };
+        let behaviorHistory = [];
+
+        // Custom Photo Selectors
+        function selectPresetPhoto(url) {
+            document.getElementById('input-photo-url').value = '';
+            player.photo = url;
+            document.querySelectorAll('.preset-photo-btn').forEach(btn => {
+                btn.classList.remove('border-amber-500');
+                btn.classList.add('border-transparent');
+            });
+            event.currentTarget.classList.remove('border-transparent');
+            event.currentTarget.classList.add('border-amber-500');
+        }
+
+        function handleFileUpload(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    player.photo = evt.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function selectDifficulty(radio) {
+            document.querySelectorAll('.diff-card').forEach(card => {
+                card.classList.remove('border-amber-500');
+                card.classList.add('border-slate-800');
+            });
+            radio.closest('.diff-card').classList.remove('border-slate-800');
+            radio.closest('.diff-card').classList.add('border-amber-500');
+            player.difficulty = radio.value;
+        }
+
+        // Rich, non-repetitive event database with unique contextual options for every scenario
+        const masterEventDatabase = [
+            {
+                category: "Economia & Inflação",
+                title: "Reajuste nos Combustíveis e Paridade Internacional",
+                description: "A Petrobras pressiona por um reajuste imediato de 18% na gasolina devido à disparada do petróleo no exterior. Se negar, a estatal perde valor; se aprovar, a inflação dispara.",
+                ticker: "PLANTÃO ECONOMIA: Reajuste do combustível provoca impasse no Palácio do Planalto.",
+                options: [
+                    {
+                        text: "Autorizar o reajuste integral de 18% para manter a saúde financeira da estatal e atração de investimento externo.",
+                        impact: { pov: -14, dep: 5, sen: 5, stf: 0, int: 15 },
+                        ecoImpact: { pib: 0.2, inflation: 1.2, treasury: 8 },
+                        feedback: "O mercado internacional e investidores elogiaram a disciplina fiscal, mas os motoristas e caminhoneiros protestaram nas ruas.",
+                        news: "Combustíveis sobem 18% na bomba; bolsas sobem e inflação sente impacto."
+                    },
+                    {
+                        text: "Usar a canetada para congelar as tarifas e subsidiar o aumento diretamente com o Caixa do Tesouro.",
+                        impact: { pov: 15, dep: -8, sen: -8, stf: -5, int: -12 },
+                        ecoImpact: { pib: -0.2, inflation: -0.5, treasury: -25 },
+                        feedback: "A população comemorou o preço baixo no posto, porém agências de risco rebaixaram o crédito do país devido ao rombo fiscal.",
+                        news: "Governo congela preço da gasolina; risco-país sobe por estouro de gastos."
+                    },
+                    {
+                        text: "Zerar os impostos federais sobre combustíveis e negociar um teto de ICMS com os Governadores.",
+                        impact: { pov: 8, dep: 8, sen: 8, stf: 0, int: 0 },
+                        ecoImpact: { pib: 0.1, inflation: -0.2, treasury: -12 },
+                        feedback: "Solução negociada de compromisso reduziu o impacto na bomba sem arranhar a governança da empresa.",
+                        news: "Acordo entre Planalto e governadores reduz impostos federais sobre combustíveis."
+                    }
+                ]
+            },
+            {
+                category: "Política & Congresso",
+                title: "Crise das Emendas Pix e Fundo Eleitoral",
+                description: "Líderes do Centrão exigem a liberação imediata de R$ 15 bilhões em Emendas Pix no orçamento sob ameaça de travar votações prioritárias da sua gestão.",
+                ticker: "CONGRESSO: Cúpula do Legislativo ameaça travar pautas do governo sem verbas.",
+                options: [
+                    {
+                        text: "Ceder às exigências e liberar a verba das emendas integrais aos parlamentares da base.",
+                        impact: { pov: -12, dep: 20, sen: 20, stf: -10, int: -5 },
+                        ecoImpact: { pib: 0.1, inflation: 0.4, treasury: -15 },
+                        feedback: "Você garantiu uma base sólida na Câmara e Senado, mas a opinião pública criticou a negociação fisiológica.",
+                        news: "Planalto libera lote recorde de emendas e destrava pautas no Congresso."
+                    },
+                    {
+                        text: "Vetar o repasse de emendas obscuras e exigir transparência total com rastreamento no Ministério do Planejamento.",
+                        impact: { pov: 18, dep: -22, sen: -20, stf: 12, int: 10 },
+                        ecoImpact: { pib: -0.1, inflation: -0.2, treasury: 15 },
+                        feedback: "A população e o STF aplaudiram a firmeza contra o fisiologismo, mas a Câmara declarou guerra ao Palácio.",
+                        news: "Veto presidencial a emendas gera revolta entre deputados e ameaça governabilidade."
+                    },
+                    {
+                        text: "Oferecer cargos em Ministérios estratégicos e Autarquias em troca da redução da verba de emendas.",
+                        impact: { pov: -5, dep: 10, sen: 10, stf: 0, int: 0 },
+                        ecoImpact: { pib: 0.0, inflation: 0.1, treasury: -5 },
+                        feedback: "Solução política tradicional acomodou as lideranças sem torrar todo o caixa do Tesouro.",
+                        news: "Reforma ministerial acomoda partidos aliados na base aliada."
+                    }
+                ]
+            },
+            {
+                category: "Justiça & STF",
+                title: "Indicação de Novo Ministro para o STF",
+                description: "Abertura de vaga na Suprema Corte. O Senado pressiona por um jurista conservador aliado, enquanto entidades civis pedem um perfil progressista e técnico.",
+                ticker: "STF: Vaga aberta na Suprema Corte gera disputa de apadrinhamento político.",
+                options: [
+                    {
+                        text: "Indicar um jurista técnico garantista e de perfil conciliador aceito por todos os poderes.",
+                        impact: { pov: 5, dep: 8, sen: 10, stf: 15, int: 8 },
+                        ecoImpact: { pib: 0.1, inflation: 0.0, treasury: 0 },
+                        feedback: "Sua indicação pacificou o STF e foi aprovada com folga na sabatina do Senado.",
+                        news: "Novo ministro do STF é sabatinado e aprovado com elogios pela neutralidade."
+                    },
+                    {
+                        text: "Indicar um aliado pessoal abertamente alinhado com a sua pauta partidária.",
+                        impact: { pov: -10, dep: 12, sen: -5, stf: -15, int: -8 },
+                        ecoImpact: { pib: 0.0, inflation: 0.0, treasury: 0 },
+                        feedback: "Você ganhou um aliado fiel na Corte, mas gerou forte ruído de aparelhamento das instituições.",
+                        news: "Indicação de aliado do presidente ao STF causa polêmica entre juristas."
+                    },
+                    {
+                        text: "Delegar a escolha à lista tríplice formulada pela associação dos magistrados.",
+                        impact: { pov: 12, dep: -8, sen: -8, stf: 18, int: 12 },
+                        ecoImpact: { pib: 0.0, inflation: 0.0, treasury: 0 },
+                        feedback: "Respeito à autonomia corporativa fortaleceu imensamente seu prestígio internacional e junto ao STF.",
+                        news: "Presidente escolhe nome da lista tríplice e é aclamado por juristas."
+                    }
+                ]
+            },
+            {
+                category: "Meio Ambiente & Clima",
+                title: "Embargo Ambiental e Relações Internacionais",
+                description: "Países europeus ameaçam bloquear o acordo comercial MERCOSUL-UE devido ao aumento do desmatamento ilegal e queimadas em biomas nacionais.",
+                ticker: "DIPLOMACIA: União Europeia impõe ultimato ambiental sobre produtos brasileiros.",
+                options: [
+                    {
+                        text: "Criar Operação de Garantia da Lei e da Ordem (GLO) com Forças Armadas para combater os ilícitos ambientais.",
+                        impact: { pov: 10, dep: -8, sen: -5, stf: 10, int: 22 },
+                        ecoImpact: { pib: 0.4, inflation: -0.1, treasury: -8 },
+                        feedback: "A resposta contundente evitou sanções internacionais e garantiu a ratificação de acordos comerciais.",
+                        news: "Forças Armadas combatem queimadas; Europa elogia postura ambiental do Brasil."
+                    },
+                    {
+                        text: "Rejeitar a ingerência estrangeira e priorizar a expansão da fronteira agrícola para o agronegócio.",
+                        impact: { pov: -8, dep: 18, sen: 15, stf: -8, int: -25 },
+                        ecoImpact: { pib: 0.2, inflation: 0.3, treasury: 5 },
+                        feedback: "Bancada do agro no Congresso fortaleceu apoio ao governo, mas fundos internacionais retiraram investimentos.",
+                        news: "Europa suspende compras de commodities; bancada ruralista comemora apoio do Planalto."
+                    },
+                    {
+                        text: "Propor um fundo de financiamento internacional onde os países ricos paguem pela preservação das florestas.",
+                        impact: { pov: 8, dep: 5, sen: 5, stf: 5, int: 12 },
+                        ecoImpact: { pib: 0.3, inflation: 0.0, treasury: 15 },
+                        feedback: "A iniciativa diplomática atraiu bilhões em doações estrangeiras sem enfraquecer o setor produtivo.",
+                        news: "Brasil capta recursos bilionários em Fundo Internacional de Preservação."
+                    }
+                ]
+            },
+            {
+                category: "Escândalo Histórico",
+                title: "Denúncia de Superfaturamento em Licitação da Saúde",
+                description: "Um grande jornal revela esquema de propina e compra com ágio em contratos do Ministério da Saúde envolvendo assessores do governo.",
+                ticker: "URGENTE: Escândalo de superfaturamento no Ministério da Saúde atinge o Planalto.",
+                options: [
+                    {
+                        text: "Exonerar imediatamente o Ministro da Saúde e determinar auditoria completa na Polícia Federal.",
+                        impact: { pov: 12, dep: -10, sen: -8, stf: 12, int: 10 },
+                        ecoImpact: { pib: 0.0, inflation: 0.0, treasury: 5 },
+                        feedback: "A demissão rápida estancou a crise de imagem e provou compromisso com a transparência.",
+                        news: "Presidente demite Ministro da Saúde e determina apuração rigorosa na PF."
+                    },
+                    {
+                        text: "Fazer Pronunciamento em Rede Nacional denunciando 'perseguição da imprensa' e mantendo os envolvidos.",
+                        impact: { pov: -20, dep: 10, sen: 8, stf: -15, int: -18 },
+                        ecoImpact: { pib: -0.3, inflation: 0.2, treasury: -10 },
+                        feedback: "A postura confrontadora desgastou severamente a popularidade do governo nas ruas e provocou repúdio judicial.",
+                        news: "Pronunciamento agressivo do presidente gera panelaços nas capitais."
+                    },
+                    {
+                        text: "Instalar Comissão de Inquérito Interna no Executivo e aguardar a apuração conclusiva do TCU.",
+                        impact: { pov: -5, dep: 0, sen: 0, stf: 5, int: -2 },
+                        ecoImpact: { pib: 0.0, inflation: 0.0, treasury: 0 },
+                        feedback: "A resposta morna manteve a dúvida no ar, mas ganhou tempo precioso com os aliados do Congresso.",
+                        news: "Governo abre sindicância e aguarda manifestação do Tribunal de Contas."
+                    }
+                ]
+            },
+            {
+                category: "Segurança Pública",
+                title: "Crise de Segurança e Crime Organizado nas Capitais",
+                description: "Onda de violência nas metrópoles mobiliza a população. Governadores exigem envio do Exército e verbas emergenciais para o setor de inteligência.",
+                ticker: "SEGURANÇA: Onda de criminalidade leva governadores a pedir apoio federal.",
+                options: [
+                    {
+                        text: "Criar o Sistema Único de Segurança Pública com integração de dados e repressão a lavagem de dinheiro.",
+                        impact: { pov: 15, dep: 8, sen: 8, stf: 5, int: 5 },
+                        ecoImpact: { pib: 0.1, inflation: 0.0, treasury: -10 },
+                        feedback: "Plano moderno de segurança agradou às famílias e reduziu índices de violência nas capitais.",
+                        news: "Planalto lança integração das polícias e sufoca finanças do crime organizado."
+                    },
+                    {
+                        text: "Decretar Garantia da Lei e Ordem (GLO) ocupando periferias com Forças Armadas por tempo indeterminado.",
+                        impact: { pov: 10, dep: -5, sen: -5, stf: -12, int: -10 },
+                        ecoImpact: { pib: 0.0, inflation: 0.0, treasury: -18 },
+                        feedback: "Uso militar trouxe sensação de autoridade imediata, mas levantou ressalvas sobre direitos humanos no STF.",
+                        news: "Tanques e Exército patrulham ruas em operação emergencial de segurança."
+                    },
+                    {
+                        text: "Repassar verbas diretas para os fundos estaduais sem intervenção direta do governo federal.",
+                        impact: { pov: 0, dep: 12, sen: 12, stf: 0, int: 0 },
+                        ecoImpact: { pib: 0.0, inflation: 0.0, treasury: -12 },
+                        feedback: "Transferência direta agradou os governadores e parlamentares sem desgastar a imagem do Planalto.",
+                        news: "Governo repassa R$ 5 bilhões para fundos de segurança estaduais."
+                    }
+                ]
+            }
+        ];
+
+        function buildQuestionBank1000() {
+            const themes = [
+                ['Economia','inflação e custo de vida','metas fiscais, produtividade e concorrência','subsídios temporários com revisão trimestral','pacto com estados, empresas e Congresso'],
+                ['Saúde','filas e atendimento no SUS','fila única auditável e compras rastreáveis','mutirões temporários com fiscalização','metas mensais entre União, estados e municípios'],
+                ['Educação','aprendizagem e evasão escolar','alfabetização, formação docente e avaliação','jornada ampliada e bolsas com acompanhamento','pacto federativo por metas educacionais'],
+                ['Segurança','crime organizado e violência','inteligência integrada e rastreamento financeiro','operações emergenciais com controle externo','prevenção, investigação e cooperação federativa'],
+                ['Infraestrutura','obras paradas e logística','estudos, cronogramas, licitação e fiscalização','aceleração com metas de entrega','concessões e parcerias com indicadores'],
+                ['Meio Ambiente','desmatamento, queimadas e clima','fiscalização, monitoramento e desenvolvimento sustentável','incentivos para preservação e recuperação','metas ambientais com produtores e estados'],
+                ['Congresso','governabilidade e votação de projetos','negociação transparente por programas e metas','reorganização da base em torno de prioridades','acordos projeto a projeto sem vantagens pessoais'],
+                ['Justiça','conflitos entre os Poderes','diálogo institucional e respeito às decisões judiciais','mesa formal de diálogo entre os Poderes','encaminhamento pelas instituições competentes'],
+                ['Diplomacia','pressão internacional e acordos comerciais','negociação previsível e compromissos verificáveis','diversificação de parceiros comerciais','consultas diplomáticas antes de retaliações'],
+                ['Corrupção','denúncia de irregularidades em contratos','afastamento preventivo, preservação de provas e investigação independente','auditoria reforçada e cooperação com órgãos de controle','suspensão de contratos suspeitos e processo administrativo transparente']
+            ];
+            const situations=['Governadores pedem uma resposta coordenada.','O Congresso anuncia que o assunto será prioridade.','Uma reportagem coloca o problema no centro do noticiário.','Empresas alertam para impactos em investimentos e empregos.','O Tribunal de Contas solicita informações detalhadas.','Uma crise regional ameaça se espalhar.','Organizações civis apresentam propostas diferentes.','Uma pressão internacional aumenta a urgência.','Sua equipe técnica entrega três cenários.','Uma pesquisa mostra preocupação crescente da população.'];
+            const contexts=['Há pouco espaço fiscal para novas despesas.','Você tem 30 dias para apresentar resultados.','A oposição promete fiscalizar cada etapa.','Serviços essenciais não podem ser interrompidos.','O governo precisa comunicar cada etapa.','A solução exige cooperação federativa.','Os efeitos podem variar entre regiões.','Outra crise nacional ocorre simultaneamente.','A equipe jurídica aponta limites legais.','A sociedade exige metas mensuráveis.'];
+            const approaches=[
+                ['Executar um plano técnico com metas, prazos e divulgação dos resultados.','Tomar uma medida imediata e revisar seus efeitos em seguida.','Abrir uma negociação ampla antes de fechar o desenho definitivo.'],
+                ['Criar um projeto-piloto antes de expandir nacionalmente.','Adotar uma medida temporária com avaliação independente.','Delegar parte da execução aos estados com indicadores federais.'],
+                ['Enviar ao Congresso um projeto com prestação de contas.','Usar medidas administrativas enquanto prepara uma solução permanente.','Construir uma proposta comum com estados e depois submetê-la ao Legislativo.'],
+                ['Priorizar transparência, auditoria e indicadores.','Liberar recursos emergenciais com fiscalização reforçada.','Redistribuir recursos existentes para as áreas mais pressionadas.'],
+                ['Criar força-tarefa interministerial com cronograma público.','Concentrar a coordenação em um ministério com metas mensais.','Nomear uma coordenação independente para publicar relatórios.'],
+                ['Criar incentivos para metas cumpridas e sanções para descumprimento.','Simplificar procedimentos mantendo controles posteriores.','Manter procedimentos atuais e reforçar a fiscalização.'],
+                ['Registrar um acordo público com os atores envolvidos.','Escolher uma prioridade central e executá-la rapidamente.','Dividir a solução em etapas para construir consenso.'],
+                ['Publicar os dados usados na decisão e permitir auditoria.','Comunicar a decisão primeiro e detalhar os dados depois.','Criar painel público com custos, prazos e indicadores.'],
+                ['Suspender contratos suspeitos até a apuração.','Manter somente o que tiver justificativa técnica e controle reforçado.','Separar contratos regulares e concentrar a investigação nos suspeitos.'],
+                ['Criar regra permanente com revisão anual.','Criar regra emergencial com data de expiração.','Testar três modelos e comparar os resultados depois.']
+            ];
+            const bank=[]; let id=1;
+            for(let t=0;t<10;t++) for(let sidx=0;sidx<10;sidx++) for(let c=0;c<10;c++) {
+                const th=themes[t], n=id, a=approaches[(t+sidx+c)%10], corruption=th[0]==='Corrupção'||n%47===0;
+                // As 1000 decisões têm consequências políticas diferentes.
+                // Cada alternativa pode aumentar OU reduzir o apoio, evitando que
+                // Câmara/Senado/Povo/STF subam automaticamente em todas as escolhas.
+                const signed = (seed, min, max) => {
+                    const span = max - min + 1;
+                    let value = min + (Math.abs(seed) % span);
+                    if (value === 0) value = (seed % 2 === 0 ? 2 : -2);
+                    return value;
+                };
+                const impacts=[
+                    {
+                        pov:signed(n+t*3+sidx, -8, 10),
+                        dep:signed(n+sidx*2+c, -7, 9),
+                        sen:signed(n+t*2+c, -7, 9),
+                        stf:signed(n+c*2+sidx, -6, 8),
+                        int:signed(n+t+sidx+c, -5, 9)
+                    },
+                    {
+                        pov:signed(-n-t*2-c, -10, 9),
+                        dep:signed(n+t*4-sidx, -9, 11),
+                        sen:signed(n+sidx*3-t, -9, 10),
+                        stf:signed(-n-c*2, -10, 7),
+                        int:signed(n-t-sidx, -8, 8)
+                    },
+                    {
+                        pov:signed(n*2+sidx-t, -7, 10),
+                        dep:signed(-n+t*2+c, -8, 8),
+                        sen:signed(-n+sidx*2+c, -8, 8),
+                        stf:signed(n-c*3, -5, 9),
+                        int:signed(n+t*2+sidx*2, -6, 10)
+                    }
+                ];
+                bank.push({id,category:th[0],title:`${th[0]} — ${th[1]} — cenário ${id}`,description:`${situations[sidx]} ${contexts[c]} O Planalto precisa decidir como enfrentar ${th[1]}.`,ticker:`PLANTÃO: ${th[0]} — ${th[1]}.`,options:[
+                    {text:`${a[0]} Priorizar ${th[2]}.`,impact:impacts[0],ecoImpact:{pib:0.1,inflation:-0.1,treasury:-4},feedback:'A execução terá metas, acompanhamento e avaliação periódica.',news:`Governo apresenta plano para ${th[1]}.`},
+                    {text:`${a[1]} Apostar em ${th[3]}.`,impact:impacts[1],ecoImpact:{pib:0.2,inflation:0.2,treasury:-8},feedback:'A resposta pode produzir efeitos mais rápidos, com maior pressão sobre coordenação e orçamento.',news:`Planalto anuncia resposta emergencial para ${th[1]}.`},
+                    {text:`${a[2]} Construir ${th[4]}.`,impact:impacts[2],ecoImpact:{pib:0.0,inflation:-0.05,treasury:-3},feedback:'A negociação amplia a participação dos envolvidos e distribui a execução por etapas.',news:`Governo abre negociação nacional sobre ${th[1]}.`}
+                ],corruptionRisk:corruption?8+n%8:(n%41===0?3:0)}); id++;
+            }
+            return bank;
+        }
+
+        questionBank1000 = buildQuestionBank1000();
+
+        function generateEventPool() {
+            const totalToGenerate = totalMaxTurns;
+            const pool = [];
+            const used = new Set();
+            const shuffled = [...questionBank1000].sort(() => Math.random() - 0.5);
+            for (let i = 0; i < totalToGenerate; i++) {
+                let base = shuffled[i % shuffled.length];
+                while (used.has(base.id)) base = questionBank1000[Math.floor(Math.random() * questionBank1000.length)];
+                used.add(base.id);
+                const year = Math.floor(i / 4) + 1;
+                const quarter = (i % 4) + 1;
+                pool.push({ ...JSON.parse(JSON.stringify(base)), year, quarter, title: `${base.title} (${year}º Ano)`, options: JSON.parse(JSON.stringify(base.options)) });
+            }
+            return pool;
+        }
+
+        let eventPool = generateEventPool();
+
+        function updateCorruptionUI() {
+            const label = document.getElementById('corruption-level-label');
+            const bar = document.getElementById('corruption-bar');
+            const score = document.getElementById('corruption-score');
+            const status = document.getElementById('corruption-status');
+            if (!label) return;
+            const stages = [
+                ['NÍVEL 0 — ÍNTEGRO','text-emerald-400','Sem denúncias relevantes.','bg-emerald-500'],
+                ['NÍVEL 1 — SUSPEITAS','text-lime-400','Rumores e sinais de conflito de interesses começam a circular.','bg-lime-500'],
+                ['NÍVEL 2 — IRREGULARIDADES','text-amber-400','Órgãos de controle pedem explicações e documentos.','bg-amber-500'],
+                ['NÍVEL 3 — ESCÂNDALO','text-orange-400','A crise domina o noticiário e afeta sua governabilidade.','bg-orange-500'],
+                ['NÍVEL 4 — CRISE DE CORRUPÇÃO','text-rose-400','Investigações atingem o núcleo do governo; o risco político é elevado.','bg-rose-500'],
+                ['NÍVEL 5 — COLAPSO DE INTEGRIDADE','text-red-500','Múltiplas investigações e denúncias comprometem fortemente o governo.','bg-red-600']
+            ];
+            const idx = Math.min(5, Math.floor(corruptionScore / 20));
+            corruptionStage = idx;
+            label.className = `text-[10px] ${stages[idx][1]}`;
+            label.textContent = stages[idx][0];
+            bar.className = `h-full rounded-full ${stages[idx][3]} transition-all duration-500`;
+            bar.style.width = `${Math.min(100, corruptionScore)}%`;
+            score.textContent = `${Math.round(corruptionScore)} / 100`;
+            status.textContent = stages[idx][2];
+        }
+
+        function applyCorruptionEffect(option, eventObj) {
+            let delta = eventObj.corruptionRisk || 0;
+            const text = (option.text + ' ' + option.feedback).toLowerCase();
+            if (/auditoria|investiga|transpar|afastar|controle/.test(text)) delta -= 7;
+            if (/ocultar|manter os envolvidos|sem fiscalização|vantagens pouco transparentes|minimizar/.test(text)) delta += 12;
+            corruptionScore = Math.max(0, Math.min(100, corruptionScore + delta));
+            if (delta > 0) corruptionScandalCount++;
+            if (corruptionScore >= 60) {
+                stats.pov = Math.max(0, stats.pov - 2);
+                stats.dep = Math.max(0, stats.dep - 1);
+            }
+            updateCorruptionUI();
+        }
+
+        function applyDecisionBehavior(option, eventObj) {
+            const text = (option.text + ' ' + (option.feedback || '')).toLowerCase();
+            const impact = option.impact || {};
+            const eco = option.ecoImpact || {};
+            const behavior = governmentBehavior;
+
+            // Cada escolha deixa uma consequência acumulada no perfil do governo.
+            if (/auditoria|investiga|transpar|controle|fiscaliza|prestação de contas|compliance/.test(text)) behavior.transparency += 7;
+            if (/ocultar|sigilo|manter os envolvidos|sem fiscalização|minimizar|abafar/.test(text)) behavior.transparency -= 10;
+
+            if (/congresso|base|emenda|negociar|acordo|coalizão|governadores|parlament/.test(text)) behavior.coalition += 3;
+            if (/confrontar|atacar|romper|enfrentar o congresso|sem diálogo/.test(text)) {
+                behavior.coalition -= 6;
+                behavior.confrontation += 7;
+            }
+
+            if (eco.treasury < 0 || /subsidiar|gastar|aumentar despesas|rombo|crédito extraordinário/.test(text)) behavior.fiscal -= 4;
+            if (eco.treasury > 0 || /cortar gastos|regra fiscal|equilíbrio fiscal|responsabilidade fiscal/.test(text)) behavior.fiscal += 4;
+
+            if (impact.stf < 0) behavior.institutional -= 5;
+            if (impact.stf > 0 || /constitucional|judiciário|instituições|decisão judicial/.test(text)) behavior.institutional += 4;
+
+            if (impact.pov < 0) behavior.publicTrust -= Math.min(6, Math.abs(impact.pov) / 3);
+            if (impact.pov > 0) behavior.publicTrust += Math.min(5, impact.pov / 4);
+
+            // A economia também muda o comportamento futuro do governo.
+            if (economy.inflation > 9) behavior.fiscal -= 2;
+            if (economy.treasury < 50) behavior.fiscal -= 3;
+            if (economy.pib < 0) behavior.publicTrust -= 2;
+
+            for (const key of ['fiscal','institutional','transparency','coalition','publicTrust']) {
+                behavior[key] = Math.max(0, Math.min(100, Math.round(behavior[key])));
+            }
+            behavior.confrontation = Math.max(0, Math.min(100, Math.round(behavior.confrontation)));
+
+            behaviorHistory.push({
+                turn: currentTurn + 1,
+                title: eventObj.title,
+                fiscal: behavior.fiscal,
+                institutional: behavior.institutional,
+                transparency: behavior.transparency,
+                coalition: behavior.coalition,
+                publicTrust: behavior.publicTrust
+            });
+        }
+
+        function getImpeachmentRisk() {
+            let risk = 1.5;
+            risk += Math.max(0, 35 - stats.dep) * 0.8;
+            risk += Math.max(0, 35 - stats.sen) * 0.8;
+            risk += Math.max(0, 30 - stats.stf) * 0.55;
+            risk += Math.max(0, 35 - governmentBehavior.transparency) * 0.20;
+            risk += Math.max(0, 35 - governmentBehavior.institutional) * 0.18;
+            risk += Math.max(0, 35 - governmentBehavior.coalition) * 0.22;
+            risk += corruptionScore * 0.18;
+            risk += Math.max(0, economy.inflation - 7) * 0.45;
+            risk += Math.max(0, 50 - economy.treasury) * 0.06;
+            risk += governmentBehavior.confrontation * 0.08;
+            if (player.difficulty === 'medio') risk *= 1.15;
+            if (player.difficulty === 'dificil') risk *= 1.35;
+            return Math.max(0, Math.min(95, risk));
+        }
+
+        function getRandomCrisisChance() {
+            let chance = 2;
+            chance += Math.max(0, 40 - governmentBehavior.publicTrust) * 0.08;
+            chance += Math.max(0, 40 - governmentBehavior.institutional) * 0.07;
+            chance += Math.max(0, 40 - governmentBehavior.coalition) * 0.08;
+            chance += corruptionScore * 0.06;
+            chance += governmentBehavior.confrontation * 0.05;
+            if (economy.inflation > 10) chance += 2;
+            if (economy.treasury < 35) chance += 2;
+            return Math.min(35, chance);
+        }
+
+        function startGame() {
+            const inputName = document.getElementById('input-name').value;
+            const inputPhotoUrl = document.getElementById('input-photo-url').value;
+
+            if (inputName) player.name = inputName;
+            if (inputPhotoUrl) player.photo = inputPhotoUrl;
+
+            document.getElementById('header-name').textContent = `Pres. ${player.name}`;
+            document.getElementById('dashboard-name').textContent = `Pres. ${player.name}`;
+            document.getElementById('header-photo').src = player.photo;
+            document.getElementById('dashboard-photo').src = player.photo;
+
+            let diffText = "Fácil";
+            if (player.difficulty === 'medio') diffText = "Médio";
+            if (player.difficulty === 'dificil') diffText = "HARDCORE REALISTA";
+
+            document.getElementById('header-diff').textContent = `Modo: ${diffText}`;
+            document.getElementById('dashboard-difficulty-tag').textContent = `Modo: ${diffText}`;
+
+            document.getElementById('setup-screen').classList.add('hidden');
+            document.getElementById('game-screen').classList.remove('hidden');
+            document.getElementById('header-profile').classList.remove('hidden');
+            document.getElementById('time-badge').classList.remove('hidden');
+            document.getElementById('news-bar').classList.remove('hidden');
+            document.getElementById('economic-bar').classList.remove('hidden');
+            document.getElementById('btn-restart-top').classList.remove('hidden');
+
+            // Inicia o Hino Nacional como música de fundo assim que a partida começa.
+            startNationalAnthem();
+            updateCorruptionUI();
+            renderTurn();
+        }
+
+        function updateStatsUI() {
+            const metrics = ['pov', 'dep', 'sen', 'stf', 'int'];
+            
+            metrics.forEach(m => {
+                const val = stats[m];
+                const bar = document.getElementById(`bar-${m}`);
+                const txt = document.getElementById(`val-${m}`);
+
+                txt.textContent = `${val}%`;
+                bar.style.width = `${Math.max(0, Math.min(100, val))}%`;
+
+                if (val > 60) {
+                    bar.className = 'stat-bar h-full rounded-full bg-emerald-500';
+                    txt.className = 'font-bold text-emerald-400';
+                } else if (val >= (player.difficulty === 'dificil' ? 30 : 20)) {
+                    bar.className = 'stat-bar h-full rounded-full bg-amber-500';
+                    txt.className = 'font-bold text-amber-400';
+                } else {
+                    bar.className = 'stat-bar h-full rounded-full bg-rose-500 animate-pulse';
+                    txt.className = 'font-bold text-rose-500';
+                }
+            });
+
+            // Economic bar updates
+            document.getElementById('eco-pib').textContent = `${economy.pib >= 0 ? '+' : ''}${economy.pib.toFixed(1)}% (R$ ${economy.pibTotal.toFixed(1)}T)`;
+            document.getElementById('eco-pib').className = economy.pib >= 0 ? 'font-bold text-emerald-400' : 'font-bold text-rose-400';
+            
+            document.getElementById('eco-inflation').textContent = `${economy.inflation.toFixed(1)}%`;
+            document.getElementById('eco-unemployment').textContent = `${economy.unemployment.toFixed(1)}%`;
+            document.getElementById('eco-treasury').textContent = `R$ ${economy.treasury} Bi`;
+
+            // Impeachment warning
+            let minSupport = Math.min(stats.dep, stats.sen);
+            if (minSupport < (player.difficulty === 'dificil' ? 30 : 20)) {
+                document.getElementById('gov-status-badge').className = "bg-rose-500/20 text-rose-400 text-xs px-2.5 py-0.5 rounded-full font-bold border border-rose-500/40 animate-pulse";
+                document.getElementById('gov-status-badge').textContent = "Risco Impeachment!";
+            } else {
+                document.getElementById('gov-status-badge').className = "bg-emerald-500/10 text-emerald-400 text-xs px-2.5 py-0.5 rounded-full font-bold border border-emerald-500/30";
+                document.getElementById('gov-status-badge').textContent = "Estável";
+            }
+        }
+
+        function renderTurn() {
+            // Cada novo turno libera novamente as opções de resposta.
+            // O bloqueio serve apenas para impedir duplo clique no mesmo turno.
+            decisionLocked = false;
+
+            if (currentTurn >= totalMaxTurns) {
+                if (!isSecondTerm) {
+                    triggerReelectionProcess();
+                } else {
+                    finishEightYearsVictory();
+                }
+                return;
+            }
+
+            const currentEvent = eventPool[currentTurn];
+
+            document.getElementById('current-year').textContent = currentEvent.year;
+            document.getElementById('current-quarter').textContent = `T${currentEvent.quarter}`;
+            document.getElementById('max-years').textContent = isSecondTerm ? "/8" : "/4";
+            document.getElementById('mandate-tag').textContent = isSecondTerm ? "2º Mandato (Anos 5-8)" : "1º Mandato (Anos 1-4)";
+            
+            document.getElementById('event-category').textContent = currentEvent.category;
+            document.getElementById('event-turn-indicator').textContent = `${currentTurn + 1} / ${totalMaxTurns}`;
+            document.getElementById('event-title').textContent = currentEvent.title;
+            document.getElementById('event-description').textContent = currentEvent.description;
+            document.getElementById('news-ticker').textContent = currentEvent.ticker;
+
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+
+            currentEvent.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = "btn-option w-full text-left p-4 rounded-2xl bg-slate-900/90 hover:bg-slate-800/90 border border-slate-800 hover:border-amber-500/50 flex items-start gap-3 group transition shadow-md";
+                
+                let impactPreview = [];
+
+                if (player.difficulty === 'facil') {
+                    for (let k in opt.impact) {
+                        const val = opt.impact[k];
+                        if (val > 0) impactPreview.push(`<span class="text-emerald-400 font-mono text-[10px] bg-emerald-950/60 px-1.5 py-0.5 rounded border border-emerald-800/50">+${val} ${k.toUpperCase()}</span>`);
+                        else if (val < 0) impactPreview.push(`<span class="text-rose-400 font-mono text-[10px] bg-rose-950/60 px-1.5 py-0.5 rounded border border-rose-800/50">${val} ${k.toUpperCase()}</span>`);
+                    }
+                } else if (player.difficulty === 'medio') {
+                    for (let k in opt.impact) {
+                        const val = opt.impact[k];
+                        if (val > 0) impactPreview.push(`<span class="text-emerald-400 text-[10px] bg-emerald-950/40 px-1.5 py-0.5 rounded border border-emerald-800/40"><i class="fa-solid fa-arrow-up"></i> ${k.toUpperCase()}</span>`);
+                        else if (val < 0) impactPreview.push(`<span class="text-amber-400 text-[10px] bg-amber-950/40 px-1.5 py-0.5 rounded border border-amber-800/40"><i class="fa-solid fa-arrow-down"></i> ${k.toUpperCase()}</span>`);
+                    }
+                } else {
+                    // HARDCORE REALISTIC: ZERO IMPACT SPOILERS
+                    impactPreview.push(`<span class="text-slate-500 font-mono text-[10px] italic"><i class="fa-solid fa-eye-slash mr-1"></i> Modo Realista: Avalie sem spoilers</span>`);
+                }
+
+                btn.innerHTML = `
+                    <div class="w-8 h-8 rounded-xl bg-slate-950 group-hover:bg-amber-500 group-hover:text-slate-950 text-amber-400 font-bold flex items-center justify-center shrink-0 border border-slate-800 transition">
+                        ${String.fromCharCode(65 + idx)}
+                    </div>
+                    <div class="flex-grow">
+                        <p class="text-xs md:text-sm font-semibold text-slate-100 mb-2 leading-snug">${opt.text}</p>
+                        <div class="flex flex-wrap gap-1">
+                            ${impactPreview.join('')}
+                        </div>
+                    </div>
+                `;
+
+                btn.addEventListener('click', function() { selectOption(opt, currentEvent); });
+                container.appendChild(btn);
+            });
+
+            updateStatsUI();
+        }
+
+        function selectOption(option, eventObj) {
+            // Impede duplo clique ou múltiplos callbacks da mesma decisão.
+            // Só bloqueia a decisão atual após o primeiro clique.
+            // O próximo turno será desbloqueado por renderTurn().
+            if (impeachmentInProgress) return;
+            if (decisionLocked) return;
+            decisionLocked = true;
+            document.querySelectorAll('#options-container button').forEach(btn => {
+                btn.disabled = true;
+                btn.classList.add('opacity-60', 'pointer-events-none');
+            });
+
+            let mult = player.difficulty === 'dificil' ? 1.4 : (player.difficulty === 'medio' ? 1.1 : 1.0);
+
+            for (let key in option.impact) {
+                let change = option.impact[key] * mult;
+                stats[key] = Math.max(0, Math.min(100, stats[key] + Math.round(change)));
+            }
+
+            if (option.ecoImpact) {
+                economy.pib += option.ecoImpact.pib;
+                economy.inflation += option.ecoImpact.inflation;
+                economy.treasury += option.ecoImpact.treasury;
+
+                // Hardcore Realism: Spending too much without treasury spikes inflation
+                if (player.difficulty === 'dificil' && economy.treasury < 30) {
+                    economy.inflation += 0.8;
+                    stats.pov = Math.max(0, stats.pov - 4);
+                }
+            }
+
+            document.getElementById('news-ticker').textContent = `ÚLTIMA HORA: ${option.news}`;
+
+            const logEntry = document.createElement('div');
+            logEntry.className = "p-2.5 rounded-xl bg-slate-950 border border-slate-800 space-y-1";
+            logEntry.innerHTML = `
+                <div class="flex justify-between text-[11px] font-bold text-amber-400">
+                    <span>Ano ${eventObj.year} - T${eventObj.quarter} | ${eventObj.title}</span>
+                </div>
+                <p class="text-slate-200 text-xs">${option.text}</p>
+                <p class="text-slate-400 italic text-[11px]">${option.feedback}</p>
+            `;
+            
+            const historyLog = document.getElementById('history-log');
+            if (currentTurn === 0) historyLog.innerHTML = '';
+            historyLog.prepend(logEntry);
+
+            const fbBox = document.getElementById('feedback-box');
+            document.getElementById('feedback-text').textContent = option.feedback;
+            fbBox.className = "mb-6 p-4 rounded-2xl border text-xs md:text-sm bg-slate-950 border-amber-500/40 text-amber-200 block";
+            
+            applyCorruptionEffect(option, eventObj);
+            applyDecisionBehavior(option, eventObj);
+            updateStatsUI();
+
+            // Impeachment só pode ser iniciado quando os apoios estiverem MUITO baixos.
+            // Uma decisão normal não abre um processo apenas por sorte: é necessário
+            // que a situação política/institucional realmente tenha chegado ao limite.
+            const impeachmentThreshold = player.difficulty === 'dificil' ? 15 : 12;
+            const veryLowSupport = stats.dep <= impeachmentThreshold ||
+                                   stats.sen <= impeachmentThreshold ||
+                                   stats.stf <= 8;
+            const severeCrisis = corruptionScore >= 95 &&
+                                 stats.dep <= 20 &&
+                                 stats.sen <= 20;
+
+            if (veryLowSupport || severeCrisis) {
+                setTimeout(() => {
+                    triggerImpeachmentModal();
+                }, 1000);
+                return;
+            }
+
+            // Outros desdobramentos podem surgir conforme o histórico das escolhas.
+            // Eles não são garantidos: o comportamento acumulado apenas altera a chance.
+            const crisisChance = getRandomCrisisChance();
+            if (Math.random() * 100 < crisisChance) {
+                const crisisTypes = [];
+                if (governmentBehavior.publicTrust < 40) crisisTypes.push('PROTESTOS NACIONAIS', 'QUEDA DE POPULARIDADE');
+                if (governmentBehavior.coalition < 40) crisisTypes.push('REBelião NA BASE DO CONGRESSO');
+                if (governmentBehavior.institutional < 40) crisisTypes.push('CRISE INSTITUCIONAL');
+                if (governmentBehavior.transparency < 40 || corruptionScore >= 45) crisisTypes.push('NOVA DENÚNCIA E INVESTIGAÇÃO');
+                if (economy.inflation > 9 || economy.treasury < 35) crisisTypes.push('CRISE ECONÔMICA');
+
+                if (crisisTypes.length) {
+                    const crisis = crisisTypes[Math.floor(Math.random() * crisisTypes.length)];
+                    document.getElementById('news-ticker').textContent = `PLANTÃO: ${crisis}. As consequências das suas decisões anteriores estão repercutindo no governo.`;
+                    if (crisis === 'PROTESTOS NACIONAIS' || crisis === 'QUEDA DE POPULARIDADE') stats.pov = Math.max(0, stats.pov - 4);
+                    if (crisis === 'REBelião NA BASE DO CONGRESSO') { stats.dep = Math.max(0, stats.dep - 4); stats.sen = Math.max(0, stats.sen - 3); }
+                    if (crisis === 'CRISE INSTITUCIONAL') stats.stf = Math.max(0, stats.stf - 4);
+                    if (crisis === 'NOVA DENÚNCIA E INVESTIGAÇÃO') corruptionScore = Math.min(100, corruptionScore + 5);
+                    if (crisis === 'CRISE ECONÔMICA') { economy.inflation += 0.5; economy.pib -= 0.1; }
+                    updateCorruptionUI();
+                    updateStatsUI();
+                }
+            }
+
+            currentTurn++;
+            setTimeout(() => {
+                fbBox.className = "hidden";
+                renderTurn();
+            }, 1200);
+        }
+
+        function executeDecree(type) {
+            let msg = "";
+            if (type === 'auxilio') {
+                if (economy.treasury < 20) { alert("Tesouro insuficiente para criar Auxílio!"); return; }
+                economy.treasury -= 20;
+                stats.pov = Math.min(100, stats.pov + 12);
+                economy.inflation += 0.5;
+                msg = "Decreto Presidencial: Aumento do Auxílio Emergencial executado (+12% Povo, -R$ 20Bi Caixa).";
+            } else if (type === 'emendas') {
+                if (economy.treasury < 12) { alert("Tesouro insuficiente para emendas!"); return; }
+                economy.treasury -= 12;
+                stats.dep = Math.min(100, stats.dep + 10);
+                stats.sen = Math.min(100, stats.sen + 10);
+                msg = "Decreto: Liberação de Emendas Pix executada (+10% Câmara/Senado).";
+            } else if (type === 'diplomacia') {
+                if (economy.treasury < 2) { alert("Tesouro insuficiente!"); return; }
+                economy.treasury -= 2;
+                stats.int = Math.min(100, stats.int + 15);
+                economy.pib += 0.2;
+                msg = "Viagem Diplomática: Acordos bilaterais fechados (+15% Comunidade Internacional).";
+            } else if (type === 'reforma_ministerial') {
+                stats.dep = Math.min(100, stats.dep + 8);
+                stats.sen = Math.min(100, stats.sen + 8);
+                stats.pov = Math.max(0, stats.pov - 6);
+                msg = "Reforma Ministerial: Ministérios redistribuídos com o Congresso (+8% DEP/SEN, -6% POV).";
+            }
+
+            updateStatsUI();
+            document.getElementById('news-ticker').textContent = `DECRETO: ${msg}`;
+            alert(msg);
+        }
+
+        function triggerImpeachmentModal() {
+            // O processo só pode ser aberto uma vez por vez.
+            if (impeachmentInProgress) return;
+            impeachmentInProgress = true;
+            if (impeachmentVoteInterval) {
+                clearInterval(impeachmentVoteInterval);
+                impeachmentVoteInterval = null;
+            }
+
+            const modal = document.getElementById('impeachment-modal');
+            modal.classList.remove('hidden');
+
+            let reason = "";
+            if (stats.dep < 20) reason = "Seu apoio na Câmara dos Deputados desabou. A Mesa Diretora abriu a votação do processo de Impeachment por crime de responsabilidade fiscal.";
+            else if (stats.sen < 20) reason = "Sua base no Senado Federal ruiu. O plenário iniciou o julgamento de cassação.";
+            else reason = "O STF identificou flagrante descumprimento constitucional e autorizou o rito de impeachment no Congresso.";
+
+            document.getElementById('impeachment-reason').textContent = reason;
+
+            let yesVotes = 0;
+            let noVotes = 0;
+            let supportFactor = (stats.dep + stats.sen + (stats.pov / 2)) / 2.5;
+
+            // Reinicia visualmente a votação antes de começar.
+            document.getElementById('votes-yes').textContent = '0';
+            document.getElementById('votes-no').textContent = '0';
+            document.getElementById('bar-votes-no').style.width = '0%';
+            document.getElementById('bar-votes-yes').style.width = '0%';
+            document.getElementById('btn-finish-impeachment').classList.add('hidden');
+            document.getElementById('voting-status-text').textContent = 'Votação nominal em andamento no Plenário...';
+
+            let interval = setInterval(() => {
+                let randomRoll = Math.random() * 100;
+                if (randomRoll < supportFactor) {
+                    noVotes += 15;
+                } else {
+                    yesVotes += 18;
+                }
+
+                let total = yesVotes + noVotes;
+                document.getElementById('votes-yes').textContent = yesVotes;
+                document.getElementById('votes-no').textContent = noVotes;
+
+                let noPct = Math.round((noVotes / total) * 100);
+                let yesPct = Math.round((yesVotes / total) * 100);
+
+                document.getElementById('bar-votes-no').style.width = `${noPct}%`;
+                document.getElementById('bar-votes-yes').style.width = `${yesPct}%`;
+
+                if (total >= 513) {
+                    clearInterval(interval);
+                    impeachmentVoteInterval = null;
+                    document.getElementById('btn-finish-impeachment').classList.remove('hidden');
+                    document.getElementById('voting-status-text').textContent = "Votação encerrada na Câmara!";
+                }
+            }, 80);
+            impeachmentVoteInterval = interval;
+        }
+
+        function resolveImpeachmentResult() {
+            if (!impeachmentInProgress) return;
+            if (impeachmentVoteInterval) {
+                clearInterval(impeachmentVoteInterval);
+                impeachmentVoteInterval = null;
+            }
+            const yes = parseInt(document.getElementById('votes-yes').textContent);
+            const no = parseInt(document.getElementById('votes-no').textContent);
+
+            document.getElementById('impeachment-modal').classList.add('hidden');
+            impeachmentInProgress = false;
+
+            if (yes > no) {
+                // Impeachment aprovado: encerra a partida e retorna imediatamente à tela inicial.
+                alert(`IMPEACHMENT APROVADO!\n\nPor ${yes} votos a favor e ${no} contra, o Congresso encerrou o seu mandato.\n\nO jogo será reiniciado.`);
+                resetWholeGame();
+                return;
+            } else {
+                alert("O impeachment foi rejeitado! Seu governo se salvou no Plenário.");
+                stats.dep = 35;
+                stats.sen = 35;
+                updateStatsUI();
+                decisionLocked = false;
+                renderTurn();
+            }
+        }
+
+        const opponents = [
+            { name: "Sérgio Mello", party: "Partido Liberal Conservador", style: "Corte de impostos e segurança" },
+            { name: "Marina Silva", party: "Aliança Socioambiental", style: "Preservação e pautas sociais" },
+            { name: "Eduardo Campos", party: "Frente Desenvolvimentista", style: "Obras de infraestrutura" }
+        ];
+
+        // Vinheta original de debate: sintetizada no navegador para não depender de um arquivo externo.
+        let debateAudioCtx = null;
+        let debateTimerInterval = null;
+        let debateAudioFileUrl = null;
+
+        function playDebateSting() {
+            try {
+                if (debateAudioFileUrl) {
+                    const audio = document.getElementById('debate-audio-upload');
+                    audio.currentTime = 0;
+                    audio.volume = 0.42;
+                    audio.play().catch(() => {});
+                    return;
+                }
+                const AC = window.AudioContext || window.webkitAudioContext;
+                if (!AC) return;
+                debateAudioCtx = debateAudioCtx || new AC();
+                if (debateAudioCtx.state === 'suspended') debateAudioCtx.resume();
+                const now = debateAudioCtx.currentTime;
+                const master = debateAudioCtx.createGain();
+                master.gain.setValueAtTime(0.0001, now);
+                master.gain.exponentialRampToValueAtTime(0.16, now + 0.03);
+                master.gain.exponentialRampToValueAtTime(0.0001, now + 1.9);
+                master.connect(debateAudioCtx.destination);
+
+                const notes = [220, 277.18, 329.63, 440];
+                notes.forEach((freq, i) => {
+                    const osc = debateAudioCtx.createOscillator();
+                    const gain = debateAudioCtx.createGain();
+                    osc.type = i === 3 ? 'triangle' : 'sine';
+                    osc.frequency.setValueAtTime(freq, now + i * 0.08);
+                    gain.gain.setValueAtTime(0.0001, now + i * 0.08);
+                    gain.gain.exponentialRampToValueAtTime(0.45, now + i * 0.08 + 0.04);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, now + 1.6);
+                    osc.connect(gain).connect(master);
+                    osc.start(now + i * 0.08);
+                    osc.stop(now + 1.8);
+                });
+            } catch (e) {}
+        }
+
+        function playDebateTransition() {
+            try {
+                const AC = window.AudioContext || window.webkitAudioContext;
+                if (!AC) return;
+                debateAudioCtx = debateAudioCtx || new AC();
+                if (debateAudioCtx.state === 'suspended') debateAudioCtx.resume();
+                const now = debateAudioCtx.currentTime;
+                const osc = debateAudioCtx.createOscillator();
+                const gain = debateAudioCtx.createGain();
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(880, now);
+                osc.frequency.exponentialRampToValueAtTime(1320, now + 0.12);
+                gain.gain.setValueAtTime(0.0001, now);
+                gain.gain.exponentialRampToValueAtTime(0.06, now + 0.015);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.2);
+                osc.connect(gain).connect(debateAudioCtx.destination);
+                osc.start(now);
+                osc.stop(now + 0.22);
+            } catch (e) {}
+        }
+
+        function startDebateTimer() {
+            clearInterval(debateTimerInterval);
+            let remaining = 30;
+            const timer = document.getElementById('debate-timer');
+            const tick = () => {
+                if (!timer) return;
+                timer.textContent = `00:${String(remaining).padStart(2,'0')}`;
+                timer.classList.toggle('text-rose-400', remaining <= 10);
+                if (remaining <= 0) {
+                    clearInterval(debateTimerInterval);
+                    timer.textContent = 'TEMPO';
+                }
+                remaining--;
+            };
+            tick();
+            debateTimerInterval = setInterval(tick, 1000);
+        }
+
+        function loadDebateAudioFile(file) {
+            if (!file) return;
+            if (debateAudioFileUrl) URL.revokeObjectURL(debateAudioFileUrl);
+            debateAudioFileUrl = URL.createObjectURL(file);
+            document.getElementById('debate-audio-upload').src = debateAudioFileUrl;
+        }
+
+        // Personagens reais da eleição presidencial de 2026; os resultados deste jogo são apenas uma simulação.
+        const electionCandidates = [
+            {id:'player',name:()=>player.name,party:'Candidatura do Jogador',base:10,color:'amber'},
+            {id:'lula',name:()=> 'Luiz Inácio Lula da Silva',party:'PT',base:10,color:'rose'},
+            {id:'flavio',name:()=> 'Flávio Bolsonaro',party:'PL',base:10,color:'blue'},
+            {id:'zema',name:()=> 'Romeu Zema',party:'NOVO',base:10,color:'emerald'},
+            {id:'caiado',name:()=> 'Ronaldo Caiado',party:'PSD',base:10,color:'cyan'},
+            {id:'renan',name:()=> 'Renan Santos',party:'Missão',base:10,color:'violet'},
+            {id:'cury',name:()=> 'Augusto Cury',party:'Avante',base:10,color:'amber'},
+            {id:'samara',name:()=> 'Samara Martins',party:'UP',base:10,color:'pink'},
+            {id:'hertz',name:()=> 'Hertz Dias',party:'PSTU',base:10,color:'orange'},
+            {id:'edmilson',name:()=> 'Edmilson Costa',party:'PCB',base:10,color:'red'},
+            {id:'clariana',name:()=> 'Clariana Barão',party:'DC',base:10,color:'sky'},
+            {id:'wilson',name:()=> 'Wilson Grassi',party:'Democrata',base:10,color:'slate'},
+            {id:'rui',name:()=> 'Rui Costa Pimenta',party:'PCO',base:10,color:'fuchsia'}
+        ];
+
+        const electionDebates = {
+            first: [
+                'Como controlar inflação e custo de vida sem comprometer as contas públicas?',
+                'Qual é o plano para saúde, educação e serviços públicos nos próximos quatro anos?',
+                'Como enfrentar corrupção e garantir transparência em contratos e emendas?',
+                'Qual será a política de segurança pública e combate ao crime organizado?',
+                'Como equilibrar crescimento econômico, meio ambiente e geração de empregos?'
+            ],
+            second: [
+                'O que diferencia seu projeto do adversário para a economia e o emprego?',
+                'Como pretende governar com um Congresso que pode não ter maioria?',
+                'Que mecanismos concretos usará para prevenir corrupção e conflitos de interesse?',
+                'Como lidará com crises institucionais e decisões judiciais?',
+                'Qual será sua prioridade nos primeiros 100 dias de um novo mandato?'
+            ]
+        };
+
+        // Respostas próprias para cada pergunta. Nenhum bloco repete as mesmas três opções.
+        const electionDebateAnswers = {
+            first: [
+                [
+                    ['Apresentar uma regra fiscal clara, rever despesas ineficientes e ampliar investimentos produtivos.',22],
+                    ['Reduzir temporariamente tributos sobre itens essenciais e compensar a receita com revisão de gastos.',17],
+                    ['Congelar preços administrados por decreto e ampliar subsídios enquanto durar a pressão inflacionária.',8]
+                ],
+                [
+                    ['Criar metas nacionais para filas, alfabetização e aprendizagem, com recursos vinculados a resultados.',22],
+                    ['Ampliar a atenção básica de saúde e acelerar obras de escolas, creches e hospitais.',18],
+                    ['Concentrar o orçamento em grandes programas federais e deixar a execução cotidiana para Estados e municípios.',12]
+                ],
+                [
+                    ['Publicar dados de contratos e emendas em formato aberto e fortalecer auditorias e controles independentes.',23],
+                    ['Afastar preventivamente envolvidos em denúncias e encaminhar indícios aos órgãos competentes.',19],
+                    ['Criar uma força-tarefa dentro do Executivo para acompanhar contratos de maior valor.',14]
+                ],
+                [
+                    ['Integrar bancos de dados policiais, inteligência financeira e operações contra as organizações criminosas.',22],
+                    ['Aumentar investimentos em policiamento, perícia e investigação nos Estados por meio de convênios federais.',18],
+                    ['Ampliar operações federais emergenciais em áreas críticas e avaliar os resultados antes de mantê-las.',13]
+                ],
+                [
+                    ['Combinar licenciamento previsível, fiscalização ambiental e investimentos em energia e infraestrutura.',22],
+                    ['Criar incentivos para empresas que reduzam emissões e gerem empregos formais em cadeias sustentáveis.',19],
+                    ['Acelerar projetos de crescimento com metas ambientais e compensações verificáveis.',15]
+                ]
+            ],
+            second: [
+                [
+                    ['Priorizar produtividade, qualificação profissional e estabilidade das regras para estimular investimento e emprego.',23],
+                    ['Reduzir custos de contratação e direcionar crédito para pequenas e médias empresas.',19],
+                    ['Concentrar investimentos públicos em setores considerados estratégicos para acelerar a atividade econômica.',15]
+                ],
+                [
+                    ['Negociar uma agenda pública de projetos com cada bancada, preservando transparência e independência entre os Poderes.',23],
+                    ['Construir uma coalizão parlamentar baseada em compromissos programáticos e metas mensuráveis.',20],
+                    ['Enviar as principais reformas ao Congresso e buscar apoio caso a caso conforme cada votação.',15]
+                ],
+                [
+                    ['Criar regras de integridade para nomeações, contratos, conflitos de interesse e acompanhamento de recursos públicos.',23],
+                    ['Ampliar auditorias preventivas e divulgar periodicamente os resultados das apurações.',20],
+                    ['Fortalecer corregedorias e canais protegidos para denúncias dentro da administração pública.',17]
+                ],
+                [
+                    ['Respeitar decisões judiciais e abrir diálogo institucional quando houver divergências entre os Poderes.',23],
+                    ['Criar uma mesa permanente de diálogo entre Executivo, Legislativo e Judiciário para prevenir crises.',19],
+                    ['Usar os instrumentos jurídicos previstos para contestar decisões, sem interromper o funcionamento institucional.',16]
+                ],
+                [
+                    ['Apresentar um pacote dos primeiros 100 dias com prioridades, prazos, responsáveis e prestação de contas pública.',23],
+                    ['Concentrar o início do mandato em saúde, emprego e segurança, com medidas emergenciais de execução rápida.',20],
+                    ['Enviar ao Congresso as reformas estruturais consideradas prioritárias e iniciar os programas de governo.',17]
+                ]
+            ]
+        };
+
+        function electionBaseScore(c) {
+            if (c.id === 'player') return c.base + (c.id === 'player' ? stats.pov * 0.35 + economy.pib * 1.8 - economy.inflation * 1.2 + firstRoundDebateScore * 0.15 - corruptionScore * 0.12 : 0) + Math.random() * 18;
+            return c.base + (Math.random()*12-6);
+        }
+
+        function normalizeVotes(list) {
+            const positive = list.map(c => ({...c, score: Math.max(1, c.score)}));
+            const sum = positive.reduce((a,c)=>a+c.score,0);
+            return positive.map(c => ({...c, pct: +(c.score/sum*100).toFixed(1)})).sort((a,b)=>b.pct-a.pct);
+        }
+
+        function renderElectionShell(title, subtitle) {
+            const modal = document.getElementById('election-modal');
+            const stage = modal.querySelector('.relative.z-10');
+            stage.innerHTML = `
+                <div class="flex items-center justify-between border-b border-white/10 pb-3 mb-5"><span class="text-[10px] font-black tracking-[.22em] text-rose-400"><span class="debate-live-dot inline-block w-2.5 h-2.5 rounded-full bg-rose-500 mr-2"></span>AO VIVO</span><span class="text-[10px] font-black tracking-[.2em] text-slate-400">ELEIÇÃO PRESIDENCIAL</span></div>
+                <h2 id="election-title" class="text-3xl font-serif-title font-bold text-white">${title}</h2>
+                <p id="election-subtitle" class="text-xs text-amber-400 uppercase tracking-[.25em] font-black mt-1 mb-5">${subtitle}</p>
+                <div id="election-content"></div>`;
+            modal.classList.remove('hidden');
+        }
+
+        function renderCandidateTable(votes, title='APURAÇÃO') {
+            return `<div class="bg-slate-950/90 border border-slate-800 rounded-2xl p-4 text-left"><div class="text-[10px] font-black tracking-widest text-slate-400 mb-3">${title}</div>${votes.map((v,i)=>`<div class="mb-3"><div class="flex justify-between text-xs font-bold"><span class="${v.id==='player'?'text-amber-300':'text-slate-200'}">${i+1}. ${v.name}</span><span>${v.pct}%</span></div><div class="h-2 bg-slate-800 rounded-full overflow-hidden mt-1"><div class="h-full ${v.id==='player'?'bg-amber-500':'bg-cyan-500'}" style="width:${v.pct}%"></div></div><div class="text-[9px] text-slate-500 mt-1">${v.party}</div></div>`).join('')}</div>`;
+        }
+
+        function triggerReelectionProcess() {
+            firstRoundDebateScore = 0;
+            secondRoundDebateScore = 0;
+            electionState = { stage:'first-debate', candidates:electionCandidates.map(c=>({...c,name:c.name()})), firstRound:[], finalists:[], endorsements:{}, secondRound:[] };
+            renderElectionShell('1º TURNO — DEBATE PRESIDENCIAL','Todos os candidatos na disputa');
+            renderElectionDebate('first');
+            playDebateSting();
+        }
+
+        function renderElectionDebate(round) {
+            const questions = electionDebates[round];
+            const idx = electionState.debateIndex || 0;
+            if (idx >= questions.length) { if (round === 'first') runFirstRoundElection(); else runSecondRoundElection(); return; }
+            const opponentNames = electionState.candidates.filter(c=>c.id!=='player').map(c=>c.name).join(' • ');
+            const answers = electionDebateAnswers[round][idx].map(a => [...a]).sort(() => Math.random() - 0.5);
+            document.getElementById('election-content').innerHTML = `
+                <div class="bg-slate-950/80 rounded-2xl border border-amber-500/20 p-4 text-left">
+                    <div class="flex justify-between text-[10px] font-black uppercase tracking-widest mb-3"><span class="text-rose-400">DEBATE ${round==='first'?'1º':'2º'} TURNO</span><span class="text-amber-400">Pergunta ${idx+1}/${questions.length}</span></div>
+                    <div class="text-[9px] text-slate-500 mb-2">Candidatos: ${round==='first'?opponentNames:'FINALISTAS'}</div>
+                    <p class="text-base font-semibold text-white bg-slate-900 border border-slate-800 rounded-xl p-4">“${questions[idx]}”</p>
+                    <div class="grid gap-2 mt-3">${answers.map((a,i)=>`<button onclick="answerElectionDebate(${a[1]},'${round}')" class="text-left p-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-amber-500/50 text-xs text-slate-200 transition"><span class="font-black text-amber-400 mr-2">${String.fromCharCode(65+i)}.</span>${a[0]}</button>`).join('')}</div>
+                </div>`;
+            startElectionTimer();
+        }
+
+        function startElectionTimer(){ clearInterval(electionTimer); let t=25; electionTimer=setInterval(()=>{ t--; if(t<=0){clearInterval(electionTimer); answerElectionDebate(8,electionState.stage==='first-debate'?'first':'second');}},1000); }
+        function answerElectionDebate(points, round){ clearInterval(electionTimer); if(round==='first') firstRoundDebateScore += points; else secondRoundDebateScore += points; electionState.debateIndex=(electionState.debateIndex||0)+1; playDebateTransition(); renderElectionDebate(round); }
+
+        function runFirstRoundElection(){
+            electionState.stage='first-round';
+            const scored=electionState.candidates.map(c=>({id:c.id,name:c.name,party:c.party,score:electionBaseScore(c)+(c.id==='player'?firstRoundDebateScore*0.18:Math.random()*8)}));
+            electionState.firstRound=normalizeVotes(scored);
+            electionState.finalists=electionState.firstRound.slice(0,2);
+            renderElectionShell('1º TURNO — APURAÇÃO','100% das urnas apuradas');
+            const qualifies=electionState.finalists.some(c=>c.id==='player');
+            document.getElementById('election-content').innerHTML=renderCandidateTable(electionState.firstRound,'RESULTADO DO 1º TURNO')+`<div class="mt-4 p-4 rounded-2xl bg-slate-900 border border-amber-500/20 text-sm text-slate-200">${qualifies?'Você está no 2º turno. Os demais candidatos agora podem declarar apoio.':'Você não ficou entre os dois mais votados. Seu mandato termina após a transição eleitoral.'}</div><button onclick="continueAfterFirstRound()" class="w-full mt-4 py-3.5 bg-amber-500 text-slate-950 font-black rounded-xl">Continuar</button>`;
+        }
+
+        function continueAfterFirstRound(){
+            // Os candidatos eliminados sempre participam da etapa de apoios antes do 2º turno.
+            renderEndorsements();
+        }
+
+        function renderEndorsements(){
+            const finalists=electionState.finalists;
+            const eliminated=electionState.firstRound.filter(c=>!finalists.some(f=>f.id===c.id));
+            renderElectionShell('2º TURNO — APOIOS','Os candidatos eliminados anunciam seus próprios apoios');
+            const rows=eliminated.map(c=>{
+                const choice=finalists[Math.floor(Math.random()*finalists.length)];
+                electionState.endorsements[c.id]=choice.id;
+                return `<div class="bg-slate-950 border border-slate-800 rounded-xl p-3 flex items-center justify-between gap-3"><div><div class="text-xs font-bold text-white">${c.name}</div><div class="text-[10px] text-slate-500">${c.party} — ${c.pct}% no 1º turno</div></div><div class="text-right"><div class="text-[9px] uppercase tracking-widest text-slate-500">Apoio anunciado pelo candidato</div><div class="text-xs font-black text-amber-400">${choice.name}</div></div></div>`;
+            }).join('');
+            document.getElementById('election-content').innerHTML=`<div class="mb-3 text-xs text-slate-400">Nesta versão, o jogador não escolhe apoios. Cada candidato eliminado toma automaticamente sua própria decisão dentro da simulação.</div><div class="space-y-3">${rows}</div><button id="btn-start-second-debate" onclick="startSecondRoundDebate()" class="w-full mt-4 py-3.5 bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-950 font-black rounded-xl">Ir ao debate do 2º turno</button>`;
+        }
+        function chooseEndorsement(from,to){ electionState.endorsements[from]=to; }
+
+        function startSecondRoundDebate(){ electionState.stage='second-debate'; electionState.debateIndex=0; renderElectionShell('2º TURNO — DEBATE DECISIVO','Os dois finalistas frente a frente'); renderElectionDebate('second'); playDebateSting(); }
+
+        function runSecondRoundElection(){
+            const [a,b]=electionState.finalists;
+            const score=(c)=>{ let base=c.pct; if(c.id==='player') base += stats.pov*.22 + economy.pib*1.5 - economy.inflation*.8 + secondRoundDebateScore*.25 - corruptionScore*.12; Object.entries(electionState.endorsements).forEach(([from,to])=>{if(to===c.id){const src=electionState.firstRound.find(x=>x.id===from); base += (src?.pct||0)*0.45;}}); return Math.max(1,base); };
+            const vals=normalizeVotes([{...a,score:score(a)},{...b,score:score(b)}]);
+            electionState.secondRound=vals;
+            renderElectionShell('2º TURNO — RESULTADO FINAL','O candidato mais votado é eleito');
+            document.getElementById('election-content').innerHTML=renderCandidateTable(vals,'APURAÇÃO FINAL DO 2º TURNO')+`<div class="mt-4 p-4 rounded-2xl ${vals[0].id==='player'?'bg-emerald-950/50 border-emerald-500/30':'bg-slate-900 border-slate-800'} border rounded-2xl text-sm font-bold">${vals[0].id==='player'?`🏆 ${player.name} foi o mais votado e está eleito para o 2º mandato!`:`${vals[0].name} foi o mais votado e será o próximo Presidente.`}</div><button onclick="finishElectionResult()" class="w-full mt-4 py-3.5 bg-amber-500 text-slate-950 font-black rounded-xl">Encerrar apuração</button>`;
+        }
+
+        function finishElectionResult(){
+            const winner=electionState.secondRound[0];
+            document.getElementById('election-modal').classList.add('hidden');
+            if(winner && winner.id==='player'){ alert(`ELEITO NO 2º TURNO!\n\n${player.name} foi o candidato mais votado e continuará para o 2º mandato.`); startSecondTerm(); }
+            else showFinalModal({icon:'fa-box-archive',iconColor:'text-slate-400',iconBg:'bg-slate-800 border-slate-700',title:'FIM DO MANDATO',subtitle:'Transição Democrática',message:`${winner?.name||'A oposição'} foi o candidato mais votado no 2º turno. Seu mandato chegou ao fim.`});
+        }
+
+        function startSecondTerm(){
+            // A reeleição não encerra a partida: o jogador entra imediatamente no 2º mandato.
+            isSecondTerm = true;
+            totalMaxTurns = 32;
+            currentTurn = 16;
+            eventPool = generateEventPool();
+            decisionLocked = false;
+            electionState.stage = 'second-term';
+            document.getElementById('final-modal').classList.add('hidden');
+            document.getElementById('election-modal').classList.add('hidden');
+            document.getElementById('game-screen').classList.remove('hidden');
+            document.getElementById('setup-screen').classList.add('hidden');
+            document.getElementById('header-profile').classList.remove('hidden');
+            document.getElementById('time-badge').classList.remove('hidden');
+            document.getElementById('news-bar').classList.remove('hidden');
+            document.getElementById('economic-bar').classList.remove('hidden');
+            document.getElementById('btn-restart-top').classList.remove('hidden');
+            updateCorruptionUI();
+            updateStatsUI();
+            renderTurn();
+            alert(`🏛️ 2º MANDATO INICIADO!\n\n${player.name}, sua reeleição foi confirmada. O jogo continua agora nos anos 5 a 8.\n\nAs decisões, crises, escândalos e indicadores continuam valendo.`);
+        }
+
+        // Compatibilidade com referências antigas
+        function startDebateQuestions(){ if(electionState.stage==='second-debate') startSecondRoundDebate(); else triggerReelectionProcess(); }
+        function finishEightYearsVictory() {
+            // Fim definitivo após os dois mandatos: mostra a mensagem e retorna à tela inicial.
+            document.getElementById('btn-continue-2term').classList.add('hidden');
+            showFinalModal({
+                icon: "fa-crown",
+                iconColor: "text-yellow-400",
+                iconBg: "bg-yellow-500/10 border-yellow-500/30",
+                title: "PARABÉNS, PRESIDENTE!",
+                subtitle: "DOIS MANDATOS CONCLUÍDOS",
+                message: `Parabéns, Presidente ${player.name}! Você concluiu os dois mandatos consecutivos e permaneceu 8 anos como Presidente da República. Seu governo chegou ao fim após cumprir os dois mandatos.
+
+O jogo será encerrado e você voltará para a tela inicial.`
+            });
+
+            setTimeout(() => {
+                resetWholeGame();
+                alert(`🏆 PARABÉNS, PRESIDENTE ${player.name.toUpperCase()}!\n\nVocê concluiu 2 mandatos consecutivos e ficou 8 anos como Presidente da República!\n\nO jogo voltou para a tela inicial.`);
+            }, 2800);
+        }
+
+        function showFinalModal(data) {
+            document.getElementById('final-icon').className = `fa-solid ${data.icon}`;
+            document.getElementById('final-icon-bg').className = `w-20 h-20 mx-auto rounded-2xl flex items-center justify-center text-4xl mb-3 ${data.iconBg} ${data.iconColor}`;
+            document.getElementById('final-title').textContent = data.title;
+            document.getElementById('final-subtitle').textContent = data.subtitle;
+            document.getElementById('final-message').textContent = data.message;
+
+            document.getElementById('final-stats-box').innerHTML = `
+                <div class="font-bold text-slate-300 mb-2 border-b border-slate-800 pb-1 uppercase tracking-wider text-[10px]">Resultados do Governo:</div>
+                <div class="grid grid-cols-2 gap-2 text-slate-300">
+                    <div>👥 Povo: <strong class="text-amber-400">${stats.pov}%</strong></div>
+                    <div>🏛️ Câmara: <strong class="text-emerald-400">${stats.dep}%</strong></div>
+                    <div>🏛️ Senado: <strong class="text-purple-400">${stats.sen}%</strong></div>
+                    <div>⚖️ STF: <strong class="text-amber-400">${stats.stf}%</strong></div>
+                    <div class="col-span-2">📈 PIB acumulado: <strong class="text-cyan-400">${economy.pib.toFixed(1)}%</strong></div>
+                </div>
+            `;
+
+            document.getElementById('final-modal').classList.remove('hidden');
+        }
+
+        function resetWholeGame() {
+            if (impeachmentVoteInterval) { clearInterval(impeachmentVoteInterval); impeachmentVoteInterval = null; }
+            impeachmentInProgress = false;
+            decisionLocked = false;
+            currentTurn = 0;
+            totalMaxTurns = 16;
+            isSecondTerm = false;
+            corruptionScore = 0;
+            corruptionStage = 0;
+            corruptionScandalCount = 0;
+            governmentBehavior = { fiscal: 50, institutional: 50, transparency: 50, coalition: 50, publicTrust: 50, confrontation: 0 };
+            behaviorHistory = [];
+            stats = { pov: 50, dep: 50, sen: 50, stf: 50, int: 50 };
+            economy = { pib: 2.1, pibTotal: 10.9, inflation: 4.5, unemployment: 8.2, treasury: 120 };
+            eventPool = generateEventPool();
+
+            document.getElementById('final-modal').classList.add('hidden');
+            document.getElementById('impeachment-modal').classList.add('hidden');
+            document.getElementById('election-modal').classList.add('hidden');
+            document.getElementById('game-screen').classList.add('hidden');
+            document.getElementById('btn-continue-2term').classList.add('hidden');
+            
+            document.getElementById('setup-screen').classList.remove('hidden');
+
+            // Para a trilha ao voltar para a tela inicial.
+            nationalAnthem.pause();
+            nationalAnthem.currentTime = 0;
+        }
+
+        selectPresetPhoto('https://images.unsplash.com/photo-1560250097-0b93528c311a?w=150');
+    </script>
+
+    <!-- Áudio opcional do debate: se você fornecer o arquivo original, ele pode ser ligado aqui.
+         Enquanto isso, o jogo usa uma vinheta original sintetizada pelo navegador. -->
+    <audio id="debate-audio-upload" preload="auto"></audio>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
+}
+</script>
+</body>
+</html>
